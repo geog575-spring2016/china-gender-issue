@@ -227,4 +227,5 @@ function setMap2() {
         	.datum(asiaRegion)
         	.attr("class", "backgroundCountry")
         	.attr("d", path);
+    }
 };
