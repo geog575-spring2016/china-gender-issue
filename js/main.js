@@ -1,5 +1,6 @@
 window.onload = function() {
 	setMap();
+    setMap2();
 	//may add other functions to implement other elements here
 };
 
@@ -188,4 +189,42 @@ function setScatterPlot(csvData) {
 			return scale(d["rural_unmarried_m_f"]);
 		})
 		.attr("r", 3);
+};
+function setMap2() {
+    //choropleth map with time slider (for total population), changes ever year with line graph 
+    //
+    var width = 600, height = 500;
+
+	var map = d3.select("body")
+		.append("svg")
+		.attr("class", "map")
+		.attr("width", width)
+		.attr("height", height);
+
+	var projection = d3.geo.albers()
+		.center([0, 36.33])
+		.rotate([-103, 0, 0])
+		.parallels([29.5, 45.17])
+		.scale(750)
+		.translate([width / 2, height / 2]);
+
+	var path = d3.geo.path()
+		.projection(projection);
+
+	queue()
+		.defer(d3.csv, "data/gender_ratio2000.csv")
+		.defer(d3.json, "data/ChinaProvinces.topojson")
+		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
+		.await(callback); //send data to callback function once finish loading
+
+	function callback(error, csvData, provData, asiaData) {
+		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
+		var provinces = topojson.feature(provData, provData.objects.collection).features;
+		// new provinces with added attributes joined
+		//provinces = joinData(provinces, csvData);
+
+        map.append("path")
+        	.datum(asiaRegion)
+        	.attr("class", "backgroundCountry")
+        	.attr("d", path);
 };
