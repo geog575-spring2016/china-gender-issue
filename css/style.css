@@ -1,0 +1,21 @@
+.gratBackground {
+    fill: white;
+}
+
+.gratLines {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+}
+
+.backgroundCountry {
+    fill: #FFF;
+    stroke: #CCC;
+    stroke-width: 1px;
+}
+
+.enumUnits {
+    stroke: #000;
+    stroke-width: 0.5px;
+    stroke-linecap: round;
+}
