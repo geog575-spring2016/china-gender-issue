@@ -19,3 +19,8 @@
     stroke-width: 0.5px;
     stroke-linecap: round;
 }
+
+.scatterPlotBackground {
+    fill: none;
+    z-index: 0;
+}

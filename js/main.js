@@ -34,7 +34,7 @@ function setMap() {
 	function callback(error, csvData, provData, asiaData) {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
-		// new provinces with added attributes joined
+
 		provinces = joinData(provinces, csvData);
 		setGraticule(map, path);
 
@@ -89,6 +89,7 @@ function joinData(provinces, csvData) {
 					jsonProps[attr] = Math.ceil(val);
 				});
 				jsonProps["region_code"] = csvProv["region_code"];
+				jsonProps["gdp_per_capita"] = csvProv["gdp_per_capita"];
 			};
 		};
 	};
@@ -167,27 +168,66 @@ function choropleth(props, colorScale) {
 };
 
 function setScatterPlot(csvData) {
-	var scale = d3.scale.linear()
+	var leftPadding = 50;
+
+	var yScale = d3.scale.linear()
 		.range([20, 480])
-		.domain([100, 200]);
+		.domain([150, 100]);
+
+	var xScale = d3.scale.linear()
+		.range([60,480])
+		.domain([800, 10000])
 
 	var scatterPlot = d3.select("body")
 		.append("svg")
-		.attr("width", 500)
-		.attr("height", 500);
+		.attr("class", "scatterPlot")
+		.attr("width", 600)
+		.attr("height", 600);
+
+	var scatterPlotInnerWidth = 500,
+		scatterPlotInnerHeight = 500;
+	
+	var translate = "translate(" + leftPadding + "," + 5 + ")";//moves an element
+
+	var scatterPlotBackground = scatterPlot.append("rect")
+	    .attr("class", "scatterPlotBackground")
+        .attr("width", scatterPlotInnerWidth)
+        .attr("height", scatterPlotInnerHeight)
+        .attr("transform", translate);
 
 	var dataPoints = scatterPlot.selectAll(".dataPoints")
 		.data(csvData)
 		.enter()
 		.append("circle")
+		.attr("class", function(d){
+			return "bars " + d.region_code;
+		})
 		.attr("cy", function(d) {
 			//TODO: adjust location of data points
-			return scale(d[expressed]);
+			return yScale(d[expressed]);
 		})
 		.attr("cx", function(d) {
-			return scale(d["rural_unmarried_m_f"]);
+			return xScale(d["gdp_per_capita"]);
 		})
-		.attr("r", 3);
+		.attr("r", 4)
+		.attr("translate", translate);
+
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left");
+
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+
+
+	var axis = scatterPlot.append("g")
+		.attr("class", "axis")
+		.attr("transform", translate)
+		.call(yAxis);
+	
+	scatterPlot.append("g")
+		.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
+		.call(xAxis);
 };
 
-//testCommit to map1 branch
