@@ -1,5 +1,5 @@
 window.onload = function() {
-	setMap();
+	//setMap();
     setMap2();
 	//may add other functions to implement other elements here
 };
@@ -190,10 +190,49 @@ function setScatterPlot(csvData) {
 		})
 		.attr("r", 3);
 };
+
+function setLineChart(csvData){     //line graph idea can be viewed here:   http://bl.ocks.org/mbostock/4b66c0d9be9a0d56484e
+    //http://bl.ocks.org/mbostock/8033015 "Multi-Line Voronoi"
+ 	var scale = d3.scale.linear()
+		.range([20, 480])
+		.domain([100, 200]);
+
+	var scatterPlot = d3.select("body")
+		.append("svg")
+		.attr("width", 960)
+		.attr("height", 500);
+
+    var points = scatterPlot.selectAll(".points")
+        .data(csvData)
+        .enter()
+        .append("circle")
+		.attr("cy", function(d) {
+			//TODO: adjust location of data points
+			return scale(d[expressed]);
+		})
+		.attr("cx", function(d) {
+			return scale(d["rural_unmarried_m_f"]);
+		})
+		.attr("r", 3);
+    var lines = scatterPlot.selectAll(".lines")
+        .data(csvData)
+        .enter().append("line") 
+        .style("stroke", "gray")
+        .attr("cy", function(d){
+            return scale(d[expressed]);
+        })
+        .attr("cx", function(d) {
+            return scale(d[expressed]);
+        })
+        .attr("r",3);
+};
 function setMap2() {
     //choropleth map with time slider (for total population), changes ever year with line graph 
-    //
-    var width = 600, height = 500;
+    //line graph idea can be viewed here:   http://bl.ocks.org/mbostock/4b66c0d9be9a0d56484e
+	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
+	expressed = "urban_unmarried_m_f";
+
+	var width = 600, height = 500;
 
 	var map = d3.select("body")
 		.append("svg")
@@ -217,15 +256,24 @@ function setMap2() {
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
 
-	function callback(error, csvData, provData, asiaData) {
+	function callback(error, csvData, provData, asiaData) { //n
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
 		// new provinces with added attributes joined
-		//provinces = joinData(provinces, csvData);
+		provinces = joinData(provinces, csvData);
+		//setGraticule(map, path);
 
         map.append("path")
         	.datum(asiaRegion)
         	.attr("class", "backgroundCountry")
         	.attr("d", path);
+
+        var colorScale = makeColorScale(csvData);
+		setEnumUnits(provinces, map, path, colorScale);
+
+	//	setChart(csvData, colorScale); //not yet implemented
+	//	createDropdown(csvData);    //not yet implemented
+		console.log(csvData);
+		setLineChart(csvData); //linegraph implemented here
     }
 };
