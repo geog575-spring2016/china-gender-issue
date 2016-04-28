@@ -1,7 +1,34 @@
 window.onload = function() {
 	//setMap();
-    setMap2();
+   // setMap2();
 	//may add other functions to implement other elements here
+    
+//The data for our line
+ var lineData = [ { "x": 1,   "y": 5},  { "x": 20,  "y": 20},
+                  { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+                  { "x": 80,  "y": 5},  { "x": 100, "y": 60}];
+ 
+ //This is the accessor function we talked about above
+ var lineFunction = d3.svg.line()
+                          .x(function(d) { return d.x; })
+                          .y(function(d) { return d.y; })
+                         .interpolate("monotone");
+
+//The SVG Container
+var svgContainer = d3.select("body").append("svg")
+                                    .attr("width", 200)
+                                    .attr("height", 200);
+
+//The line SVG Path we draw
+var lineGraph = svgContainer.append("path")
+                            .attr("d", lineFunction(lineData))
+                            .attr("stroke", "blue")
+                            .attr("stroke-width", 2)
+                            .attr("fill", "none"); 
+    
+    
+    
+    
 };
 
 function setMap() {
@@ -190,19 +217,31 @@ function setScatterPlot(csvData) {
 		})
 		.attr("r", 3);
 };
-
+////////////////////////////////////////////////////////
+//this has problems...
 function setLineChart(csvData){     //line graph idea can be viewed here:   http://bl.ocks.org/mbostock/4b66c0d9be9a0d56484e
     //http://bl.ocks.org/mbostock/8033015 "Multi-Line Voronoi"
  	var scale = d3.scale.linear()
 		.range([20, 480])
 		.domain([100, 200]);
+    
+    var lineFunction = d3.svg.line()
+        .x(function(d) {return d.x; })
+        .y(function(d) {return d.y; })
+        .interpolate("linear");
 
-	var scatterPlot = d3.select("body")
+	var lineChartContainer = d3.select("body")
 		.append("svg")
 		.attr("width", 960)
 		.attr("height", 500);
 
-    var points = scatterPlot.selectAll(".points")
+    var lineChart = d3.select("body").append("path")
+        .attr("d", lineFunction(csvData[expressed]))
+        .attr("stroke", "blue")
+        .attr("stroke-width", 2)
+        .attr("fill", "none");
+    
+    var points = lineChart.selectAll(".points")
         .data(csvData)
         .enter()
         .append("circle")
@@ -214,15 +253,15 @@ function setLineChart(csvData){     //line graph idea can be viewed here:   http
 			return scale(d["rural_unmarried_m_f"]);
 		})
 		.attr("r", 3);
-    var lines = scatterPlot.selectAll(".lines")
+    var lines = lineChart.selectAll(".lines")
         .data(csvData)
         .enter().append("line") 
         .style("stroke", "gray")
         .attr("cy", function(d){
-            return scale(d[expressed]);
+            return lineFunction(d[expressed]);
         })
         .attr("cx", function(d) {
-            return scale(d[expressed]);
+            return lineFunction(d[expressed]);
         })
         .attr("r",3);
 };
