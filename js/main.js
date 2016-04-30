@@ -4,9 +4,11 @@ window.onload = function() {
 };
 
 function setMap() {
+	//these variables are glable in function setMap
 	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
 	expressed = "urban_unmarried_m_f";
 
+	
 	var width = 600, height = 500;
 
 	var map = d3.select("body")
@@ -44,12 +46,17 @@ function setMap() {
         	.attr("d", path);
 
         var colorScale = makeColorScale(csvData);
+		setAttrToggle(csvData);
 		setEnumUnits(provinces, map, path, colorScale);
 
-		// setChart(csvData, colorScale);
-		// createDropdown(csvData);
-		console.log(csvData);
+		yScale = d3.scale.linear()
+			.range([20, 480])
+			.domain([150, 100]);
+		xScale = d3.scale.linear()
+			.range([60,480])
+			.domain([800, 10000]);
 		setScatterPlot(csvData);
+
 
 	};
 };
@@ -170,13 +177,7 @@ function choropleth(props, colorScale) {
 function setScatterPlot(csvData) {
 	var leftPadding = 50;
 
-	var yScale = d3.scale.linear()
-		.range([20, 480])
-		.domain([150, 100]);
 
-	var xScale = d3.scale.linear()
-		.range([60,480])
-		.domain([800, 10000])
 
 	var scatterPlot = d3.select("body")
 		.append("svg")
@@ -200,7 +201,7 @@ function setScatterPlot(csvData) {
 		.enter()
 		.append("circle")
 		.attr("class", function(d){
-			return "bars " + d.region_code;
+			return "dataPoints " + d.region_code;
 		})
 		.attr("cy", function(d) {
 			//TODO: adjust location of data points
@@ -221,13 +222,53 @@ function setScatterPlot(csvData) {
 		.orient("bottom");
 
 
-	var axis = scatterPlot.append("g")
+	scatterPlot.append("g")
 		.attr("class", "axis")
 		.attr("transform", translate)
 		.call(yAxis);
 	
 	scatterPlot.append("g")
+		.attr("class", "axis")
 		.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
 		.call(xAxis);
+};
+
+function setAttrToggle(csvData) {
+	var form = d3.select("body").append("form");
+	var labelEnter = form.selectAll("span")
+		.data(attrArray)
+		.enter().
+		append("span");
+	labelEnter.append("input")
+		.attr("type", "radio")
+		.attr("name", "attr")
+		.attr("value", function(d, i) {return i;})
+		.on("change", function(){
+			console.log(this.value);
+			changeAttribute(this.value, csvData);
+			//change attribute
+		})
+		//.property("checked", function(d, i) {return (i == j);});
+
+	labelEnter.append("label").text(function(d) {return d;});
+};
+
+function changeAttribute(attrIndex, csvData) {
+	expressed = attrArray[attrIndex];
+
+	var colorScale = makeColorScale(csvData);
+	d3.selectAll(".enumUnits")
+		.transition()
+		.duration(1000)
+		.style("fill", function(d) {
+			return choropleth(d.properties, colorScale);
+		});
+
+	d3.selectAll(".dataPoints")
+		.transition()
+		.duration(1000)
+		.attr("cy", function(d) {
+			return yScale(d[expressed]);
+		});
 };
 
