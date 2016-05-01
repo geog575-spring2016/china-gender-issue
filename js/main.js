@@ -1,6 +1,8 @@
 window.onload = function() {
 	//setMap();
     setMap2();
+
+    
 };
 
 function setMap() {
@@ -222,7 +224,7 @@ function setLineChart(csvData){     //line graph idea can be viewed here:   http
 			return scale(d[expressed]);
 		})
 		.attr("cx", function(d) {
-			return scale(d["rural_unmarried_m_f"]);
+			return scale(d["1950"]);
 		})
 		.attr("r", 3);
     var lines = lineChart.selectAll(".lines")
@@ -293,27 +295,6 @@ function setMap2() {
 	//Slider bar called here
 
 	//createSlider(csvData);
-
-d3.slider();
-    //setLineChart(csvData); //linegraph implemented here
+  //setLineChart(csvData); //linegraph implemented here
     }
-};
-
-function createSlider (csvData) {
-	var margin = {top: 200, right: 50, bottom: 200, left: 50},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.bottom - margin.top;
-
-var x = d3.scale.linear()
-    .domain([0, 180])
-    .range([0, width])
-    .clamp(true);
-
-
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 };
