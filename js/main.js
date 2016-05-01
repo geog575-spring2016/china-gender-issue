@@ -151,7 +151,7 @@ function makeColorScale(data) {
     //cluster data using ckmeans clustering algorithm to create natural breaks
     var clusters = ss.ckmeans(domainArray, 5);
     //reset domain array to cluster minimums
-    domainArray = clusters.map(function(d){
+    domainArray = clusters.map(function(d) {
         return d3.min(d);
     });
     //remove first value from domain array to create class breakpoints
@@ -188,7 +188,7 @@ function setScatterPlot(csvData) {
 	var scatterPlotInnerWidth = 500,
 		scatterPlotInnerHeight = 500;
 	
-	var translate = "translate(" + leftPadding + "," + 5 + ")";//moves an element
+	translate = "translate(" + leftPadding + "," + 5 + ")";//moves an element
 
 	var scatterPlotBackground = scatterPlot.append("rect")
 	    .attr("class", "scatterPlotBackground")
@@ -200,37 +200,46 @@ function setScatterPlot(csvData) {
 		.data(csvData)
 		.enter()
 		.append("circle")
-		.attr("class", function(d){
+		.attr("class", function(d) {
 			return "dataPoints " + d.region_code;
-		})
+		});
+
+	updateScatterPlot();
+	updateYAxis(scatterPlot);
+
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+	
+	scatterPlot.append("g")
+		.attr("class", "xAxis")
+		.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
+		.call(xAxis);
+};
+
+function updateScatterPlot() {
+	d3.selectAll(".dataPoints")
 		.attr("cy", function(d) {
-			//TODO: adjust location of data points
-			return yScale(d[expressed]);
+			return 500 - yScale(d[expressed]);
 		})
 		.attr("cx", function(d) {
 			return xScale(d["gdp_per_capita"]);
 		})
 		.attr("r", 4)
 		.attr("translate", translate);
+};
 
+function updateYAxis(scatterPlot) {
+	d3.select(".yAxis").remove();
 	var yAxis = d3.svg.axis()
 		.scale(yScale)
 		.orient("left");
 
-	var xAxis = d3.svg.axis()
-		.scale(xScale)
-		.orient("bottom");
-
-
+	var scatterPlot = d3.select(".scatterPlot");
 	scatterPlot.append("g")
-		.attr("class", "axis")
+		.attr("class", "yAxis")
 		.attr("transform", translate)
 		.call(yAxis);
-	
-	scatterPlot.append("g")
-		.attr("class", "axis")
-		.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
-		.call(xAxis);
 };
 
 function setAttrToggle(csvData) {
@@ -246,6 +255,9 @@ function setAttrToggle(csvData) {
 		.on("change", function(){
 			console.log(this.value);
 			changeAttribute(this.value, csvData);
+			updateScale(csvData);
+			updateScatterPlot();
+			updateYAxis();
 			//change attribute
 		})
 		//.property("checked", function(d, i) {return (i == j);});
@@ -268,7 +280,29 @@ function changeAttribute(attrIndex, csvData) {
 		.transition()
 		.duration(1000)
 		.attr("cy", function(d) {
-			return yScale(d[expressed]);
+			return 500 - yScale(d[expressed]);
 		});
 };
 
+function updateScale(csvData) {
+	//change range to be
+	//min of expressed attribute
+	//max of expressed attribute
+	var maxVal = 0;
+	var minVal = 10000;
+	for (var i = 0; i < csvData.length; i++) {
+		var currExpressedVal = Math.ceil(csvData[i][expressed])
+		if (currExpressedVal < minVal) {
+			minVal = currExpressedVal;
+		};
+		if (currExpressedVal > maxVal) {
+			maxVal = currExpressedVal;
+		}
+	}
+
+	console.log(maxVal);
+	console.log(minVal);
+	yScale = d3.scale.linear()
+		.range([20, 480])
+		.domain([maxVal + 5, minVal - 5]);
+};
