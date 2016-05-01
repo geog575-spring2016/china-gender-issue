@@ -1,44 +1,6 @@
 window.onload = function() {
 	//setMap();
     setMap2();
-	//may add other functions to implement other elements here
-    //expressed = "urban_unmarried_m_f";
-//The data for our line //www.dashingd3js.com/svg-paths-and-d3js
- 
-    /*var lineData = [ { "x": 1950,   "y": 5},  { "x": 1980, "y": 20},
-                  { "x": 1960,  "y": 10}, { "x": 1990, "y": 40},
-                  { "x": 1970,  "y": 5},  { "x": 2000, "y": 60}];
-                  */
-    //	queue()
-	//	.defer(d3.csv, "data/gender_ratio2000.csv")
-	//	.defer(d3.json, "data/ChinaProvinces.topojson")
-	//	.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
-	//	.await(callback); //send data to callback function once finish loading
-
-//	function callback(error, csvData, provData, asiaData) {
-	   console.log(lineData);
-//	console.log(csvData);
-        
-         //This is the accessor function we talked about above
-//accesses data!
- var lineFunction = d3.svg.line()
-                          .x(function(d) { return d.x; })
-                          .y(function(d) { return d.y; })
-                         .interpolate("monotone");
-
-//The SVG Container
-var svgContainer = d3.select("body").append("svg")
-                                    .attr("width", 200)
-                                    .attr("height", 200);
-
-//The line SVG Path we draw
-var lineGraph = svgContainer.append("path")
-                            .attr("d", lineFunction(lineData))
-                            .attr("stroke", "blue")
-                            .attr("stroke-width", 5)
-                            .attr("fill", "none"); 
-    
-//	};
  
 };
 
@@ -276,6 +238,7 @@ function setLineChart(csvData){     //line graph idea can be viewed here:   http
         })
         .attr("r",3);
 };
+
 function setMap2() {
     //choropleth map with time slider (for total population), changes ever year with line graph 
     //line graph idea can be viewed here:   http://bl.ocks.org/mbostock/4b66c0d9be9a0d56484e
@@ -301,10 +264,11 @@ function setMap2() {
 		.projection(projection);      
 
 	queue()
-		.defer(d3.csv, "data/gender_ratio.csv")
+		.defer(d3.csv, "data/gender ratio.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
+    
 
 	function callback(error, csvData, provData, asiaData) { //n
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
@@ -326,6 +290,6 @@ function setMap2() {
 	//	setChart(csvData, colorScale); //not yet implemented
 	//	createDropdown(csvData);    //not yet implemented
 		console.log(csvData);
-		setLineChart(csvData); //linegraph implemented here
+    //setLineChart(csvData); //linegraph implemented here
     }
 };
