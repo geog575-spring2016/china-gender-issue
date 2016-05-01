@@ -50,12 +50,13 @@ function setMap() {
 		setEnumUnits(provinces, map, path, colorScale);
 
 		yScale = d3.scale.linear()
-			.range([20, 480])
+			.range([20, 550])
 			.domain([150, 100]);
 		xScale = d3.scale.linear()
-			.range([60,480])
+			.range([0, 580])
 			.domain([800, 10000]);
 		setScatterPlot(csvData);
+
 
 
 	};
@@ -176,8 +177,7 @@ function choropleth(props, colorScale) {
 
 function setScatterPlot(csvData) {
 	var leftPadding = 50;
-
-
+	translate = "translate(" + leftPadding + "," + 0 + ")";//moves an element
 
 	var scatterPlot = d3.select("body")
 		.append("svg")
@@ -185,16 +185,14 @@ function setScatterPlot(csvData) {
 		.attr("width", 600)
 		.attr("height", 600);
 
-	var scatterPlotInnerWidth = 500,
-		scatterPlotInnerHeight = 500;
+	// var scatterPlotInnerWidth = 500,
+	// 	scatterPlotInnerHeight = 500;
 	
-	translate = "translate(" + leftPadding + "," + 5 + ")";//moves an element
-
-	var scatterPlotBackground = scatterPlot.append("rect")
-	    .attr("class", "scatterPlotBackground")
-        .attr("width", scatterPlotInnerWidth)
-        .attr("height", scatterPlotInnerHeight)
-        .attr("transform", translate);
+	// var scatterPlotBackground = scatterPlot.append("rect")
+	//     .attr("class", "scatterPlotBackground")
+ //        .attr("width", scatterPlotInnerWidth)
+ //        .attr("height", scatterPlotInnerHeight)
+ //        .attr("transform", translate);
 
 	var dataPoints = scatterPlot.selectAll(".dataPoints")
 		.data(csvData)
@@ -213,17 +211,19 @@ function setScatterPlot(csvData) {
 	
 	scatterPlot.append("g")
 		.attr("class", "xAxis")
-		.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
+		//.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
 		.call(xAxis);
 };
 
 function updateScatterPlot() {
 	d3.selectAll(".dataPoints")
+		.transition()
+		.duration(1000)
 		.attr("cy", function(d) {
-			return 500 - yScale(d[expressed]);
+			return yScale(d[expressed]);
 		})
 		.attr("cx", function(d) {
-			return xScale(d["gdp_per_capita"]);
+			return 50 + xScale(d["gdp_per_capita"]);
 		})
 		.attr("r", 4)
 		.attr("translate", translate);
@@ -275,13 +275,6 @@ function changeAttribute(attrIndex, csvData) {
 		.style("fill", function(d) {
 			return choropleth(d.properties, colorScale);
 		});
-
-	d3.selectAll(".dataPoints")
-		.transition()
-		.duration(1000)
-		.attr("cy", function(d) {
-			return 500 - yScale(d[expressed]);
-		});
 };
 
 function updateScale(csvData) {
@@ -303,6 +296,10 @@ function updateScale(csvData) {
 	console.log(maxVal);
 	console.log(minVal);
 	yScale = d3.scale.linear()
-		.range([20, 480])
-		.domain([maxVal + 5, minVal - 5]);
+		.range([20, 550])
+		.domain([maxVal, minVal]);
+
+	console.log("cy of value 260 is")
+	console.log(yScale(260));
+
 };
