@@ -1,7 +1,6 @@
 window.onload = function() {
 	//setMap();
     setMap2();
- 
 };
 
 function setMap() {
@@ -242,8 +241,8 @@ function setLineChart(csvData){     //line graph idea can be viewed here:   http
 function setMap2() {
     //choropleth map with time slider (for total population), changes ever year with line graph 
     //line graph idea can be viewed here:   http://bl.ocks.org/mbostock/4b66c0d9be9a0d56484e
-	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
-	expressed = "urban_unmarried_m_f";
+	attrArray = ["1950","1955","1960","1965","1970","1975","1980","1985","1990","1995","2000","2005"];
+	expressed = "1980";
 
 	var width = 600, height = 500;
 
@@ -264,20 +263,17 @@ function setMap2() {
 		.projection(projection);      
 
 	queue()
-		.defer(d3.csv, "data/gender ratio.csv")
+		.defer(d3.csv, "data/gender_ratio_dec.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
     
-
 	function callback(error, csvData, provData, asiaData) { //n
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
 		// new provinces with added attributes joined
 		provinces = joinData(provinces, csvData);
 		//setGraticule(map, path);
-        console.log(csvData);
-        console.log(provinces);
 
         map.append("path")
         	.datum(asiaRegion)
@@ -285,6 +281,7 @@ function setMap2() {
         	.attr("d", path);
 
         var colorScale = makeColorScale(csvData);
+        console.log(colorScale);
 		setEnumUnits(provinces, map, path, colorScale);
 
 	//	setChart(csvData, colorScale); //not yet implemented
