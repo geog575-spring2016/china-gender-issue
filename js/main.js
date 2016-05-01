@@ -1,14 +1,14 @@
 window.onload = function() {
 	//setMap();
-   // setMap2();
+    setMap2();
 	//may add other functions to implement other elements here
     //expressed = "urban_unmarried_m_f";
 //The data for our line //www.dashingd3js.com/svg-paths-and-d3js
- var lineData = [ { "x": 1950,   "y": 5},  { "x": 1980, "y": 20},
+ 
+    /*var lineData = [ { "x": 1950,   "y": 5},  { "x": 1980, "y": 20},
                   { "x": 1960,  "y": 10}, { "x": 1990, "y": 40},
                   { "x": 1970,  "y": 5},  { "x": 2000, "y": 60}];
- 
-
+                  */
     //	queue()
 	//	.defer(d3.csv, "data/gender_ratio2000.csv")
 	//	.defer(d3.json, "data/ChinaProvinces.topojson")
@@ -17,7 +17,7 @@ window.onload = function() {
 
 //	function callback(error, csvData, provData, asiaData) {
 	   console.log(lineData);
-//ß		console.log(csvData);
+//	console.log(csvData);
         
          //This is the accessor function we talked about above
 //accesses data!
@@ -298,10 +298,10 @@ function setMap2() {
 		.translate([width / 2, height / 2]);
 
 	var path = d3.geo.path()
-		.projection(projection);
+		.projection(projection);      
 
 	queue()
-		.defer(d3.csv, "data/gender_ratio2000.csv")
+		.defer(d3.csv, "data/gender_ratio.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
@@ -312,6 +312,8 @@ function setMap2() {
 		// new provinces with added attributes joined
 		provinces = joinData(provinces, csvData);
 		//setGraticule(map, path);
+        console.log(csvData);
+        console.log(provinces);
 
         map.append("path")
         	.datum(asiaRegion)
