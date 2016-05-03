@@ -211,7 +211,7 @@ function setScatterPlot(csvData) {
 	
 	scatterPlot.append("g")
 		.attr("class", "xAxis")
-		//.attr("transform", "translate(0," + scatterPlotInnerHeight + ")")
+		.attr("transform", "translate(50," + 550 + ")")
 		.call(xAxis);
 };
 
@@ -297,7 +297,7 @@ function updateScale(csvData) {
 	console.log(minVal);
 	yScale = d3.scale.linear()
 		.range([20, 550])
-		.domain([maxVal, minVal]);
+		.domain([maxVal + 5, minVal - 5]);
 
 	console.log("cy of value 260 is")
 	console.log(yScale(260));
