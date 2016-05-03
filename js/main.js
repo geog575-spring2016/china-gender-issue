@@ -1,8 +1,8 @@
 window.onload = function() {
 	//setMap();
-    setMap2();
+   // setMap2();
+   d3.slider().axis(true).min(2000).max(2100).step(5);
 
-    
 };
 
 function setMap() {
