@@ -6,7 +6,9 @@ window.onload = function() {
 function setMap() {
 	//these variables are glable in function setMap
 	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
-	expressed = "urban_unmarried_m_f";
+	expressedAttr = "urban_unmarried_m_f";
+	yearArray = [2000, 2010];
+	expressedYear = 2000;
 
 	
 	var width = 600, height = 500;
@@ -29,31 +31,36 @@ function setMap() {
 
 	queue()
 		.defer(d3.csv, "data/gender_ratio2000.csv")
+		.defer(d3.csv, "data/gender_ratio2010.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
 
-	function callback(error, csvData, provData, asiaData) {
+	function callback(error, csvData2000, csvData2010, provData, asiaData) {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
-
-		provinces = joinData(provinces, csvData);
 		setGraticule(map, path);
-
         map.append("path")
         	.datum(asiaRegion)
         	.attr("class", "backgroundCountry")
         	.attr("d", path);
 
-        var colorScale = makeColorScale(csvData);
+		allCsvData = [csvData2000, csvData2010];
+		var csvData = allCsvData[0];
+		provinces = joinData(provinces, csvData);
+		// console.log(provinces);
+		// console.log(csvData);
 		setAttrToggle(csvData);
+		setYearToggle(yearArray);
+
+        var colorScale = makeColorScale(csvData);
 		setEnumUnits(provinces, map, path, colorScale);
 
 		yScale = d3.scale.linear()
 			.range([20, 550])
 			.domain([150, 100]);
 		xScale = d3.scale.linear()
-			.range([0, 580])
+			.range([50, 580])
 			.domain([800, 10000]);
 		setScatterPlot(csvData);
 
@@ -142,10 +149,10 @@ function makeColorScale(data) {
     var colorScale = d3.scale.threshold()
     	.range(colorClasses);
 
-    //build array of all values of the expressed attribute
+    //build array of all values of the expressedAttr attribute
     var domainArray = [];
     for (var i = 0; i < data.length; i++){
-        var val = parseFloat(data[i][expressed]);
+        var val = parseFloat(data[i][expressedAttr]);
         domainArray.push(val);
     };
 
@@ -166,7 +173,7 @@ function makeColorScale(data) {
 // deal with enumUnits without data
 function choropleth(props, colorScale) {
     //make sure attribute value is a number
-    var val = parseFloat(props[expressed]);
+    var val = parseFloat(props[expressedAttr]);
     //if attribute value exists, assign a color; otherwise assign gray
     if (val && val != NaN){
         return colorScale(val);
@@ -194,42 +201,35 @@ function setScatterPlot(csvData) {
  //        .attr("height", scatterPlotInnerHeight)
  //        .attr("transform", translate);
 
-	var dataPoints = scatterPlot.selectAll(".dataPoints")
+	updateScatterPlot(csvData);
+	updateYAxis();
+	updateXAxis();
+};
+
+//TODO: try to change scatterplot to bind to multiple year sets
+function updateScatterPlot(csvData) {
+	d3.selectAll(".dataPoints").remove();
+	var scatterPlot = d3.select(".scatterPlot");
+	scatterPlot.selectAll(".dataPoints")
 		.data(csvData)
 		.enter()
 		.append("circle")
 		.attr("class", function(d) {
 			return "dataPoints " + d.region_code;
-		});
-
-	updateScatterPlot();
-	updateYAxis(scatterPlot);
-
-	var xAxis = d3.svg.axis()
-		.scale(xScale)
-		.orient("bottom");
-	
-	scatterPlot.append("g")
-		.attr("class", "xAxis")
-		.attr("transform", "translate(50," + 550 + ")")
-		.call(xAxis);
-};
-
-function updateScatterPlot() {
-	d3.selectAll(".dataPoints")
-		.transition()
-		.duration(1000)
+		})
 		.attr("cy", function(d) {
-			return yScale(d[expressed]);
+			return yScale(d[expressedAttr]);
 		})
 		.attr("cx", function(d) {
-			return 50 + xScale(d["gdp_per_capita"]);
+			return xScale(d["gdp_per_capita"]);
 		})
 		.attr("r", 4)
-		.attr("translate", translate);
+		.attr("translate", translate)
+		.transition()
+		.duration(1000);
 };
 
-function updateYAxis(scatterPlot) {
+function updateYAxis() {
 	d3.select(".yAxis").remove();
 	var yAxis = d3.svg.axis()
 		.scale(yScale)
@@ -242,8 +242,24 @@ function updateYAxis(scatterPlot) {
 		.call(yAxis);
 };
 
+function updateXAxis() {
+	d3.select(".xAxis").remove();
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+
+	var scatterPlot = d3.select(".scatterPlot");
+	scatterPlot.append("g")
+		.attr("class", "xAxis")
+		.attr("transform", "translate(0," + 550 + ")")
+		.call(xAxis);
+};
+
 function setAttrToggle(csvData) {
-	var form = d3.select("body").append("form");
+	d3.select(".form").remove();
+	var form = d3.select("body")
+		.append("form")
+		.attr("class", "form");
 	var labelEnter = form.selectAll("span")
 		.data(attrArray)
 		.enter().
@@ -252,21 +268,23 @@ function setAttrToggle(csvData) {
 		.attr("type", "radio")
 		.attr("name", "attr")
 		.attr("value", function(d, i) {return i;})
+		.attr("checked", function(d) { //set the initially checked button
+			if (d == expressedAttr) {
+				return "checked";
+			}
+		})
 		.on("change", function(){
-			console.log(this.value);
 			changeAttribute(this.value, csvData);
-			updateScale(csvData);
-			updateScatterPlot();
+			updateYScale(csvData);
+			updateScatterPlot(csvData);
 			updateYAxis();
 			//change attribute
 		})
-		//.property("checked", function(d, i) {return (i == j);});
-
 	labelEnter.append("label").text(function(d) {return d;});
 };
 
 function changeAttribute(attrIndex, csvData) {
-	expressed = attrArray[attrIndex];
+	expressedAttr = attrArray[attrIndex];
 
 	var colorScale = makeColorScale(csvData);
 	d3.selectAll(".enumUnits")
@@ -277,29 +295,76 @@ function changeAttribute(attrIndex, csvData) {
 		});
 };
 
-function updateScale(csvData) {
+function updateYScale(csvData) {
 	//change range to be
-	//min of expressed attribute
-	//max of expressed attribute
+	//min of expressedAttr attribute
+	//max of expressedAttr attribute
 	var maxVal = 0;
 	var minVal = 10000;
 	for (var i = 0; i < csvData.length; i++) {
-		var currExpressedVal = Math.ceil(csvData[i][expressed])
+		var currExpressedVal = Math.ceil(csvData[i][expressedAttr]);
 		if (currExpressedVal < minVal) {
 			minVal = currExpressedVal;
 		};
 		if (currExpressedVal > maxVal) {
 			maxVal = currExpressedVal;
-		}
-	}
+		};
+	};
 
-	console.log(maxVal);
-	console.log(minVal);
 	yScale = d3.scale.linear()
 		.range([20, 550])
 		.domain([maxVal + 5, minVal - 5]);
 
-	console.log("cy of value 260 is")
-	console.log(yScale(260));
-
 };
+
+function updateXScale(csvData) {
+	var maxGDP = 0;
+	var minGDP = 1000000;
+	for (var i = 0; i < csvData.length; i++) {
+		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
+		if (currGDP < minGDP) {
+			minGDP = currGDP;
+		};
+		if (currGDP > maxGDP) {
+			maxGDP = currGDP;
+		};
+	};
+
+	xScale = d3.scale.linear()
+		.range([50, 580])
+		.domain([minGDP - 100, maxGDP + 100])
+};
+
+function setYearToggle(yearArray) {
+	var form = d3.select("body").append("form");
+	var labelEnter = form.selectAll("span")
+		.data(yearArray)
+		.enter().
+		append("span");
+	labelEnter.append("input")
+		.attr("type", "radio")
+		.attr("name", "year")
+		.attr("value", function(d, i) {return i;})
+		.attr("checked", function(d) { //set the initially checked button
+			if (d == 2000) {
+				return "checked";
+			}
+		})
+		.on("change", function(){
+			changeYear(this.value);
+		})
+	labelEnter.append("label").text(function(d) {return d;});
+};
+
+function changeYear(yearIndex) {
+	expressedYear = yearArray[yearIndex];
+	var csvData = allCsvData[yearIndex];
+	updateYScale(csvData);
+	updateXScale(csvData);
+	updateYAxis();
+	updateXAxis();
+	updateScatterPlot(csvData);
+	//reset attribute toggle so that the new form is based on current csvData
+	setAttrToggle(csvData);
+};
+
