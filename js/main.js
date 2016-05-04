@@ -1,7 +1,15 @@
 window.onload = function() {
 	//setMap();
-   // setMap2();
-   d3.slider().axis(true).min(2000).max(2100).step(5);
+   setMap2();
+   d3.select("body")
+   	.append("div")
+   	.attr("id", "slider");
+   var slider = d3.slider().axis(true).min(1950).max(2000).step(5)
+    .on("slide", function() {
+    	console.log("sliding");
+    });
+
+   d3.select("#slider").call(slider);
 
 };
 
