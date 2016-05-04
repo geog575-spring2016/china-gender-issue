@@ -4,9 +4,13 @@ window.onload = function() {
 };
 
 function setMap() {
+	//these variables are glable in function setMap
 	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
-	expressed = "urban_unmarried_m_f";
+	expressedAttr = "urban_unmarried_m_f";
+	yearArray = [2000, 2010];
+	expressedYear = 2000;
 
+	
 	var width = 600, height = 500;
 
 	var map = d3.select("body")
@@ -27,29 +31,38 @@ function setMap() {
 
 	queue()
 		.defer(d3.csv, "data/gender_ratio2000.csv")
+		.defer(d3.csv, "data/gender_ratio2010.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
 
-	function callback(error, csvData, provData, asiaData) {
+	function callback(error, csvData2000, csvData2010, provData, asiaData) {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
-		// new provinces with added attributes joined
-		provinces = joinData(provinces, csvData);
 		setGraticule(map, path);
-
         map.append("path")
         	.datum(asiaRegion)
         	.attr("class", "backgroundCountry")
         	.attr("d", path);
 
+		allCsvData = [csvData2000, csvData2010];
+		var csvData = allCsvData[0];
+		provinces = joinData(provinces, csvData);
+		setAttrToggle(csvData);
+		setYearToggle(yearArray);
+
         var colorScale = makeColorScale(csvData);
 		setEnumUnits(provinces, map, path, colorScale);
 
-		// setChart(csvData, colorScale);
-		// createDropdown(csvData);
-		console.log(csvData);
+		yScale = d3.scale.linear()
+			.range([20, 550])
+			.domain([150, 100]);
+		xScale = d3.scale.linear()
+			.range([50, 580])
+			.domain([800, 10000]);
 		setScatterPlot(csvData);
+
+
 
 	};
 };
@@ -89,6 +102,7 @@ function joinData(provinces, csvData) {
 					jsonProps[attr] = Math.ceil(val);
 				});
 				jsonProps["region_code"] = csvProv["region_code"];
+				jsonProps["gdp_per_capita"] = csvProv["gdp_per_capita"];
 			};
 		};
 	};
@@ -108,13 +122,13 @@ function setEnumUnits(provinces, map, path, colorScale) {
 		.style("fill", function(d) {
 			return choropleth(d.properties, colorScale);
 		})
-		// .on("mouseover", function(d) {
-		// 	highlight(d.properties);
-		// })
-		// .on("mouseout", function(d) {
-		// 	dehighlight(d.properties);
-		// })
-		// .on("mousemove", moveLabel);
+		.on("mouseover", function(d) {
+			highlight(d.properties);
+		})
+		.on("mouseout", function(d) {
+			dehighlight(d.properties);
+		})
+		.on("mousemove", moveLabel);
 
 	var desc = enumUnits.append("desc")
 		.text('{"stroke": "#000", "stroke-width": "0.5px"}');
@@ -133,17 +147,17 @@ function makeColorScale(data) {
     var colorScale = d3.scale.threshold()
     	.range(colorClasses);
 
-    //build array of all values of the expressed attribute
+    //build array of all values of the expressedAttr attribute
     var domainArray = [];
     for (var i = 0; i < data.length; i++){
-        var val = parseFloat(data[i][expressed]);
+        var val = parseFloat(data[i][expressedAttr]);
         domainArray.push(val);
     };
 
     //cluster data using ckmeans clustering algorithm to create natural breaks
     var clusters = ss.ckmeans(domainArray, 5);
     //reset domain array to cluster minimums
-    domainArray = clusters.map(function(d){
+    domainArray = clusters.map(function(d) {
         return d3.min(d);
     });
     //remove first value from domain array to create class breakpoints
@@ -157,7 +171,7 @@ function makeColorScale(data) {
 // deal with enumUnits without data
 function choropleth(props, colorScale) {
     //make sure attribute value is a number
-    var val = parseFloat(props[expressed]);
+    var val = parseFloat(props[expressedAttr]);
     //if attribute value exists, assign a color; otherwise assign gray
     if (val && val != NaN){
         return colorScale(val);
@@ -167,25 +181,277 @@ function choropleth(props, colorScale) {
 };
 
 function setScatterPlot(csvData) {
-	var scale = d3.scale.linear()
-		.range([20, 480])
-		.domain([100, 200]);
+	var leftPadding = 50;
+	translate = "translate(" + leftPadding + "," + 0 + ")";//moves an element
 
 	var scatterPlot = d3.select("body")
 		.append("svg")
-		.attr("width", 500)
-		.attr("height", 500);
+		.attr("class", "scatterPlot")
+		.attr("width", 600)
+		.attr("height", 600);
 
-	var dataPoints = scatterPlot.selectAll(".dataPoints")
+	// var scatterPlotInnerWidth = 500,
+	// 	scatterPlotInnerHeight = 500;
+	
+	// var scatterPlotBackground = scatterPlot.append("rect")
+	//     .attr("class", "scatterPlotBackground")
+ //        .attr("width", scatterPlotInnerWidth)
+ //        .attr("height", scatterPlotInnerHeight)
+ //        .attr("transform", translate);
+
+	updateScatterPlot(csvData);
+	updateYAxis();
+	updateXAxis();
+};
+
+//TODO: try to change scatterplot to bind to multiple year sets
+function updateScatterPlot(csvData) {
+	d3.selectAll(".dataPoints").remove();
+	var scatterPlot = d3.select(".scatterPlot");
+	scatterPlot.selectAll(".dataPoints")
 		.data(csvData)
 		.enter()
 		.append("circle")
+		.attr("class", function(d) {
+			return "dataPoints " + d.region_code;
+		})
 		.attr("cy", function(d) {
-			//TODO: adjust location of data points
-			return scale(d[expressed]);
+			return yScale(d[expressedAttr]);
 		})
 		.attr("cx", function(d) {
-			return scale(d["rural_unmarried_m_f"]);
+			return xScale(d["gdp_per_capita"]);
 		})
-		.attr("r", 3);
+		.attr("r", 5)
+		.attr("translate", translate)
+		.on("mouseover", highlight)
+		.on("mouseout", dehighlight)
+		.on("mousemove", moveLabel);
+};
+
+function updateYAxis() {
+	d3.select(".yAxis").remove();
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left");
+
+	var scatterPlot = d3.select(".scatterPlot");
+	scatterPlot.append("g")
+		.attr("class", "yAxis")
+		.attr("transform", translate)
+		.call(yAxis);
+};
+
+function updateXAxis() {
+	d3.select(".xAxis").remove();
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+
+	var scatterPlot = d3.select(".scatterPlot");
+	scatterPlot.append("g")
+		.attr("class", "xAxis")
+		.attr("transform", "translate(0," + 550 + ")")
+		.call(xAxis);
+};
+
+function setAttrToggle(csvData) {
+	d3.select(".form").remove();
+	var form = d3.select("body")
+		.append("form")
+		.attr("class", "form");
+	var labelEnter = form.selectAll("span")
+		.data(attrArray)
+		.enter().
+		append("span");
+	labelEnter.append("input")
+		.attr("type", "radio")
+		.attr("name", "attr")
+		.attr("value", function(d, i) {return i;})
+		.attr("checked", function(d) { //set the initially checked button
+			if (d == expressedAttr) {
+				return "checked";
+			}
+		})
+		.on("change", function(){
+			expressedAttr = attrArray[this.value];
+			updateEnumUnits(csvData);
+			updateYScale(csvData);
+			updateScatterPlot(csvData);
+			updateYAxis();
+		});
+	labelEnter.append("label").text(function(d) {return d;});
+};
+
+function updateEnumUnits(csvData) {
+	var colorScale = makeColorScale(csvData);
+	d3.selectAll(".enumUnits")
+		.transition()
+		.duration(1000)
+		.style("fill", function(d) {
+			return choropleth(d.properties, colorScale);
+		});
+};
+
+function updateYScale(csvData) {
+	//change range to be
+	//min of expressedAttr attribute
+	//max of expressedAttr attribute
+	var maxVal = 0;
+	var minVal = 10000;
+	for (var i = 0; i < csvData.length; i++) {
+		var currExpressedVal = Math.ceil(csvData[i][expressedAttr]);
+		if (currExpressedVal < minVal) {
+			minVal = currExpressedVal;
+		};
+		if (currExpressedVal > maxVal) {
+			maxVal = currExpressedVal;
+		};
+	};
+
+	yScale = d3.scale.linear()
+		.range([20, 550])
+		.domain([maxVal + 5, minVal - 5]);
+
+};
+
+function updateXScale(csvData) {
+	var maxGDP = 0;
+	var minGDP = 1000000;
+	for (var i = 0; i < csvData.length; i++) {
+		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
+		if (currGDP < minGDP) {
+			minGDP = currGDP;
+		};
+		if (currGDP > maxGDP) {
+			maxGDP = currGDP;
+		};
+	};
+
+	xScale = d3.scale.linear()
+		.range([50, 580])
+		.domain([minGDP - 100, maxGDP + 100])
+};
+
+function setYearToggle(yearArray) {
+	var form = d3.select("body").append("form");
+	var labelEnter = form.selectAll("span")
+		.data(yearArray)
+		.enter().
+		append("span");
+	labelEnter.append("input")
+		.attr("type", "radio")
+		.attr("name", "year")
+		.attr("value", function(d, i) {return i;})
+		.attr("checked", function(d) { //set the initially checked button
+			if (d == 2000) {
+				return "checked";
+			}
+		})
+		.on("change", function(){
+			changeYear(this.value);
+		})
+	labelEnter.append("label").text(function(d) {return d;});
+};
+
+function changeYear(yearIndex) {
+	expressedYear = yearArray[yearIndex];
+	var csvData = allCsvData[yearIndex];
+	updateEnumUnits(csvData);
+	updateYScale(csvData);
+	updateXScale(csvData);
+	updateYAxis();
+	updateXAxis();
+	updateScatterPlot(csvData);
+	//reset attribute toggle so that the new form is based on current csvData
+	setAttrToggle(csvData);
+};
+
+function highlight(props) {
+	//!!This selection won't work for names with multiple space
+	d3.selectAll("." + props.region_code)
+		.style({
+			"stroke": "blue",
+			"stroke-width": "2"
+		});
+
+	setLabel(props);
+}
+
+function dehighlight(props) {
+	d3.selectAll("." + props.region_code)
+		.style("stroke", "#000")
+		.style("stroke-width", "0.5px");
+
+	// d3.selectAll("." + props.region_code)
+	// 	.style({
+	// 		"stroke": function() {
+	// 			return getStyle(this, "stroke")
+	// 		},
+	// 		"stroke-width": function() {
+	// 			console.log(getStyle(this, "stroke-width"));
+
+	// 			return getStyle(this, "stroke-width")
+	// 		}
+	// 	});
+
+	// function getStyle(element, styleName) {
+	// 	var styleText = d3.select(element)
+	// 		.select("desc")
+	// 		.text();
+	// 	var styleObject = JSON.parse(styleText);
+	// 	console.log(styleObject);
+	// 	return styleObject[styleName];
+	// };
+
+	d3.select(".infolabel").remove();
+};
+
+//set label, now is appended to body as div
+function setLabel(props) {
+	//different type of labels for different attributes
+	var labelAttribute;
+	if (!props[expressedAttr]) {
+		labelAttribute = "<h1>" + "Nodata" + "</h1><b>" + "</b>";
+	} else {
+		labelAttribute = "<h1>" + Math.ceil(props[expressedAttr]) +
+        "</h1><b>" + "</b>";
+	};
+
+    //create info label div
+    var infolabel = d3.select("body")
+        .append("div")
+        .attr({
+            "class": "infolabel",
+            "id": props.region_code + "_label"
+        })
+        .html(labelAttribute);
+
+    infolabel.append("div")
+        .attr("class", "labelname")
+        .html(props.name);
+};
+
+//move info label with mouse
+function moveLabel() {
+	var labelWidth = d3.select(".infolabel")
+		.node()
+		.getBoundingClientRect()
+		.width;
+	//clientXY gives the coordinates relative to current window, will be problematic when scrolling
+	//pageXY gives the coordinates relative to the whole rendered page, including hidden part after scrolling
+    var x1 = d3.event.pageX + 10,
+        y1 = d3.event.pageY - 75,
+        x2 = d3.event.pageX - labelWidth - 10,
+        y2 = d3.event.pageY + 25;
+
+    //horizontal label coordinate, testing for overflow
+    var x = d3.event.pageX > window.innerWidth - labelWidth - 20 ? x2 : x1; 
+    //vertical label coordinate, testing for overflow
+    var y = d3.event.pageY < 75 ? y2 : y1;
+
+    d3.select(".infolabel")
+        .style({
+            "left": x + "px",
+            "top": y + "px"
+        });
 };
