@@ -1,17 +1,22 @@
 window.onload = function() {
 	//setMap();
-   setMap2();
-   d3.select("body")
-   	.append("div")
-   	.attr("id", "slider");
-   var slider = d3.slider().axis(true).min(1950).max(2000).step(5)
-    .on("slide", function() {
-    	console.log("sliding");
-    });
+	setMap2();
+	
+};
 
-   d3.select("#slider").call(slider);
+function createSlider() {
+	d3.select("body")
+		.append("div")
+		.attr("id", "slider");
+	var slider = d3.slider().axis(true).min(1950).max(2005).step(5)
+		.on("slide", function() {
+			console.log("sliding"); // change values
+		});
+
+	d3.select("#slider").call(slider);
 
 };
+
 
 function setMap() {
 	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
@@ -301,6 +306,7 @@ function setMap2() {
 
 
 	//Slider bar called here
+	createSlider();
 
 	//createSlider(csvData);
   //setLineChart(csvData); //linegraph implemented here
