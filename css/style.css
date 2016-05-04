@@ -24,3 +24,50 @@
     fill: none;
     z-index: 0;
 }
+
+.infolabel {
+    position: absolute;
+    height: 50px;
+    min-width: 100px;
+    color: #fff;
+    background-color: #000;
+    border: solid thin #fff;
+    padding: 5px 10px;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+.infolabel h1 {
+    margin: 0 20px 0 0;
+    padding: 0;
+    display: inline-block;
+    line-height: 1em;
+}
+
+.xAxis path,
+.xAxis line {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.xAxis text {
+    font-family: sans-serif;
+    font-size: 0.85em;
+    fill: #333333;
+}
+
+.yAxis path,
+.yAxis line {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.yAxis text {
+    font-family: sans-serif;
+    font-size: 0.85em;
+    fill: #333333;
+}

@@ -48,8 +48,6 @@ function setMap() {
 		allCsvData = [csvData2000, csvData2010];
 		var csvData = allCsvData[0];
 		provinces = joinData(provinces, csvData);
-		// console.log(provinces);
-		// console.log(csvData);
 		setAttrToggle(csvData);
 		setYearToggle(yearArray);
 
@@ -124,13 +122,13 @@ function setEnumUnits(provinces, map, path, colorScale) {
 		.style("fill", function(d) {
 			return choropleth(d.properties, colorScale);
 		})
-		// .on("mouseover", function(d) {
-		// 	highlight(d.properties);
-		// })
-		// .on("mouseout", function(d) {
-		// 	dehighlight(d.properties);
-		// })
-		// .on("mousemove", moveLabel);
+		.on("mouseover", function(d) {
+			highlight(d.properties);
+		})
+		.on("mouseout", function(d) {
+			dehighlight(d.properties);
+		})
+		.on("mousemove", moveLabel);
 
 	var desc = enumUnits.append("desc")
 		.text('{"stroke": "#000", "stroke-width": "0.5px"}');
@@ -223,10 +221,11 @@ function updateScatterPlot(csvData) {
 		.attr("cx", function(d) {
 			return xScale(d["gdp_per_capita"]);
 		})
-		.attr("r", 4)
+		.attr("r", 5)
 		.attr("translate", translate)
-		.transition()
-		.duration(1000);
+		.on("mouseover", highlight)
+		.on("mouseout", dehighlight)
+		.on("mousemove", moveLabel);
 };
 
 function updateYAxis() {
@@ -274,18 +273,16 @@ function setAttrToggle(csvData) {
 			}
 		})
 		.on("change", function(){
-			changeAttribute(this.value, csvData);
+			expressedAttr = attrArray[this.value];
+			updateEnumUnits(csvData);
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
 			updateYAxis();
-			//change attribute
-		})
+		});
 	labelEnter.append("label").text(function(d) {return d;});
 };
 
-function changeAttribute(attrIndex, csvData) {
-	expressedAttr = attrArray[attrIndex];
-
+function updateEnumUnits(csvData) {
 	var colorScale = makeColorScale(csvData);
 	d3.selectAll(".enumUnits")
 		.transition()
@@ -359,6 +356,7 @@ function setYearToggle(yearArray) {
 function changeYear(yearIndex) {
 	expressedYear = yearArray[yearIndex];
 	var csvData = allCsvData[yearIndex];
+	updateEnumUnits(csvData);
 	updateYScale(csvData);
 	updateXScale(csvData);
 	updateYAxis();
@@ -368,3 +366,92 @@ function changeYear(yearIndex) {
 	setAttrToggle(csvData);
 };
 
+function highlight(props) {
+	//!!This selection won't work for names with multiple space
+	d3.selectAll("." + props.region_code)
+		.style({
+			"stroke": "blue",
+			"stroke-width": "2"
+		});
+
+	setLabel(props);
+}
+
+function dehighlight(props) {
+	d3.selectAll("." + props.region_code)
+		.style("stroke", "#000")
+		.style("stroke-width", "0.5px");
+
+	// d3.selectAll("." + props.region_code)
+	// 	.style({
+	// 		"stroke": function() {
+	// 			return getStyle(this, "stroke")
+	// 		},
+	// 		"stroke-width": function() {
+	// 			console.log(getStyle(this, "stroke-width"));
+
+	// 			return getStyle(this, "stroke-width")
+	// 		}
+	// 	});
+
+	// function getStyle(element, styleName) {
+	// 	var styleText = d3.select(element)
+	// 		.select("desc")
+	// 		.text();
+	// 	var styleObject = JSON.parse(styleText);
+	// 	console.log(styleObject);
+	// 	return styleObject[styleName];
+	// };
+
+	d3.select(".infolabel").remove();
+};
+
+//set label, now is appended to body as div
+function setLabel(props) {
+	//different type of labels for different attributes
+	var labelAttribute;
+	if (!props[expressedAttr]) {
+		labelAttribute = "<h1>" + "Nodata" + "</h1><b>" + "</b>";
+	} else {
+		labelAttribute = "<h1>" + Math.ceil(props[expressedAttr]) +
+        "</h1><b>" + "</b>";
+	};
+
+    //create info label div
+    var infolabel = d3.select("body")
+        .append("div")
+        .attr({
+            "class": "infolabel",
+            "id": props.region_code + "_label"
+        })
+        .html(labelAttribute);
+
+    infolabel.append("div")
+        .attr("class", "labelname")
+        .html(props.name);
+};
+
+//move info label with mouse
+function moveLabel() {
+	var labelWidth = d3.select(".infolabel")
+		.node()
+		.getBoundingClientRect()
+		.width;
+	//clientXY gives the coordinates relative to current window, will be problematic when scrolling
+	//pageXY gives the coordinates relative to the whole rendered page, including hidden part after scrolling
+    var x1 = d3.event.pageX + 10,
+        y1 = d3.event.pageY - 75,
+        x2 = d3.event.pageX - labelWidth - 10,
+        y2 = d3.event.pageY + 25;
+
+    //horizontal label coordinate, testing for overflow
+    var x = d3.event.pageX > window.innerWidth - labelWidth - 20 ? x2 : x1; 
+    //vertical label coordinate, testing for overflow
+    var y = d3.event.pageY < 75 ? y2 : y1;
+
+    d3.select(".infolabel")
+        .style({
+            "left": x + "px",
+            "top": y + "px"
+        });
+};
