@@ -1,5 +1,5 @@
 window.onload = function() {
-	//setMap();
+	setMap();
 	setMap2();
 	
 };
