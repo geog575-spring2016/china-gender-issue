@@ -1,9 +1,33 @@
+.navbar{
+  color:black;
+}
+.mapTitle{
+  width: 100px;
+  font-size: 25px;
+  background-color: gray;
+}
+.textTitle{
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 50px;
+}
+.subtitle{
+  font-size:25px;
+}
+.text{
+  background-color: peachpuff;
+  color: gray;
+  font-size: 17px;
+  height: 200px;
+}
 .map1Div {
     width: 550px;
     float: left;
 }
 .map2Div {
     width: 550px;
+    height: 550px;
     float: left;
 }
 .gratBackground {

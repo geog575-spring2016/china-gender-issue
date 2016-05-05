@@ -42,10 +42,10 @@ function setMap() {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
 		setGraticule(map, path);
-        map.append("path")
-        	.datum(asiaRegion)
-        	.attr("class", "backgroundCountry")
-        	.attr("d", path);
+		map.append("path")
+			.datum(asiaRegion)
+			.attr("class", "backgroundCountry")
+			.attr("d", path);
 
 		allCsvData = [csvData2000, csvData2010];
 		var csvData = allCsvData[0];
@@ -53,7 +53,7 @@ function setMap() {
 		setAttrToggle(csvData);
 		setYearToggle(yearArray);
 
-        var colorScale = makeColorScale(csvData);
+		var colorScale = makeColorScale(csvData);
 		setEnumUnits(provinces, map, path, colorScale);
 
 		yScale = d3.scale.linear()
@@ -82,20 +82,20 @@ function setMap() {
 function setGraticule(map, path) {
 		// svg elements drawing order is determined by the order they were added to DOM
 	var graticule = d3.geo.graticule()
-        .step([10, 10]); //place graticule lines every 10 degrees of longitude and latitude
+		.step([10, 10]); //place graticule lines every 10 degrees of longitude and latitude
 
-    var gratBackground = map.append("path")
-    	.datum(graticule.outline())
-    	.attr("class", "gratBackground")
-    	.attr("d", path);
+	var gratBackground = map.append("path")
+		.datum(graticule.outline())
+		.attr("class", "gratBackground")
+		.attr("d", path);
 
-    // create graticule lines  
-    var gratLines = map.selectAll(".gratLines") //select graticule elements that will be created
-        .data(graticule.lines()) //bind graticule lines to each element to be created
-        .enter() //create an element for each datum
-        .append("path") //append each element to the svg as a path element
-        .attr("class", "gratLines") //assign class for styling
-        .attr("d", path); //project graticule lines
+	// create graticule lines  
+	var gratLines = map.selectAll(".gratLines") //select graticule elements that will be created
+		.data(graticule.lines()) //bind graticule lines to each element to be created
+		.enter() //create an element for each datum
+		.append("path") //append each element to the svg as a path element
+		.attr("class", "gratLines") //assign class for styling
+		.attr("d", path); //project graticule lines
 };
 
 function joinData(provinces, csvData) {
@@ -148,48 +148,48 @@ function setEnumUnits(provinces, map, path, colorScale) {
 
 function makeColorScale(data) {
 	//data is an array of provinces
-    var colorClasses = [
-        "#fee5d9",
-        "#fcae91",
-        "#fb6a4a",
-        "#de2d26",
-        "#a50f15"
-    ];
+	var colorClasses = [
+		"#fee5d9",
+		"#fcae91",
+		"#fb6a4a",
+		"#de2d26",
+		"#a50f15"
+	];
 
-    var colorScale = d3.scale.threshold()
-    	.range(colorClasses);
+	var colorScale = d3.scale.threshold()
+		.range(colorClasses);
 
-    //build array of all values of the expressedAttr attribute
-    var domainArray = [];
-    for (var i = 0; i < data.length; i++){
-        var val = parseFloat(data[i][expressedAttr]);
-        domainArray.push(val);
-    };
+	//build array of all values of the expressedAttr attribute
+	var domainArray = [];
+	for (var i = 0; i < data.length; i++){
+		var val = parseFloat(data[i][expressedAttr]);
+		domainArray.push(val);
+	};
 
-    //cluster data using ckmeans clustering algorithm to create natural breaks
-    var clusters = ss.ckmeans(domainArray, 5);
-    //reset domain array to cluster minimums
-    domainArray = clusters.map(function(d) {
-        return d3.min(d);
-    });
-    //remove first value from domain array to create class breakpoints
-    domainArray.shift();
-    //assign array of last 4 cluster minimums as domain
-    colorScale.domain(domainArray);
+	//cluster data using ckmeans clustering algorithm to create natural breaks
+	var clusters = ss.ckmeans(domainArray, 5);
+	//reset domain array to cluster minimums
+	domainArray = clusters.map(function(d) {
+		return d3.min(d);
+	});
+	//remove first value from domain array to create class breakpoints
+	domainArray.shift();
+	//assign array of last 4 cluster minimums as domain
+	colorScale.domain(domainArray);
 
-    return colorScale; 
+	return colorScale; 
 }
 
 // deal with enumUnits without data
 function choropleth(props, colorScale) {
-    //make sure attribute value is a number
-    var val = parseFloat(props[expressedAttr]);
-    //if attribute value exists, assign a color; otherwise assign gray
-    if (val && val != NaN){
-        return colorScale(val);
-    } else {
-        return "#CCC";
-    };
+	//make sure attribute value is a number
+	var val = parseFloat(props[expressedAttr]);
+	//if attribute value exists, assign a color; otherwise assign gray
+	if (val && val != NaN){
+		return colorScale(val);
+	} else {
+		return "#CCC";
+	};
 };
 
 function setScatterPlot(csvData) {
@@ -427,21 +427,21 @@ function setLabel(props) {
 		labelAttribute = "<h1>" + "Nodata" + "</h1><b>" + "</b>";
 	} else {
 		labelAttribute = "<h1>" + Math.ceil(props[expressedAttr]) +
-        "</h1><b>" + "</b>";
+		"</h1><b>" + "</b>";
 	};
 
-    //create info label div
-    var infolabel = d3.select("body")
-        .append("div")
-        .attr({
-            "class": "infolabel",
-            "id": props.region_code + "_label"
-        })
-        .html(labelAttribute);
+	//create info label div
+	var infolabel = d3.select("body")
+		.append("div")
+		.attr({
+			"class": "infolabel",
+			"id": props.region_code + "_label"
+		})
+		.html(labelAttribute);
 
-    infolabel.append("div")
-        .attr("class", "labelname")
-        .html(props.name);
+	infolabel.append("div")
+		.attr("class", "labelname")
+		.html(props.name);
 };
 
 //move info label with mouse
@@ -452,21 +452,21 @@ function moveLabel() {
 		.width;
 	//clientXY gives the coordinates relative to current window, will be problematic when scrolling
 	//pageXY gives the coordinates relative to the whole rendered page, including hidden part after scrolling
-    var x1 = d3.event.pageX + 10,
-        y1 = d3.event.pageY - 75,
-        x2 = d3.event.pageX - labelWidth - 10,
-        y2 = d3.event.pageY + 25;
+	var x1 = d3.event.pageX + 10,
+		y1 = d3.event.pageY - 75,
+		x2 = d3.event.pageX - labelWidth - 10,
+		y2 = d3.event.pageY + 25;
 
-    //horizontal label coordinate, testing for overflow
-    var x = d3.event.pageX > window.innerWidth - labelWidth - 20 ? x2 : x1; 
-    //vertical label coordinate, testing for overflow
-    var y = d3.event.pageY < 75 ? y2 : y1;
+	//horizontal label coordinate, testing for overflow
+	var x = d3.event.pageX > window.innerWidth - labelWidth - 20 ? x2 : x1; 
+	//vertical label coordinate, testing for overflow
+	var y = d3.event.pageY < 75 ? y2 : y1;
 
-    d3.select(".infolabel")
-        .style({
-            "left": x + "px",
-            "top": y + "px"
-        });
+	d3.select(".infolabel")
+		.style({
+			"left": x + "px",
+			"top": y + "px"
+		});
 };
 
 function createSlider() {
