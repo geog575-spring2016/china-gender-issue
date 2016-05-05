@@ -1,5 +1,6 @@
-window.onload = function() {
+window.onload = function() {	
 	setMap();
+
 	//may add other functions to implement other elements here
 };
 
@@ -61,6 +62,7 @@ function setMap() {
 			.range([50, 580])
 			.domain([800, 10000]);
 		setScatterPlot(csvData);
+		createSlider();
 
 
 
@@ -454,4 +456,18 @@ function moveLabel() {
             "left": x + "px",
             "top": y + "px"
         });
+};
+
+function createSlider() {
+	d3.select("body")
+		.append("div")
+		.attr("id", "slider");
+
+	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
+		// .on("slide", function() {
+		// 	console.log("sliding"); // change values
+		// });
+
+	d3.select("#slider").call(slider);
+
 };
