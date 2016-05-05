@@ -12,9 +12,9 @@ function setMap() {
 	expressedYear = 2000;
 
 	
-	var width = 600, height = 500;
+	var width = 500, height = 500;
 
-	var map = d3.select("body")
+	var map = d3.select(".map1Div")
 		.append("svg")
 		.attr("class", "map")
 		.attr("width", width)
@@ -24,7 +24,7 @@ function setMap() {
 		.center([0, 36.33])
 		.rotate([-103, 0, 0])
 		.parallels([29.5, 45.17])
-		.scale(750)
+		.scale(650)
 		.translate([width / 2, height / 2]);
 
 	var path = d3.geo.path()
@@ -33,11 +33,12 @@ function setMap() {
 	queue()
 		.defer(d3.csv, "data/gender_ratio2000.csv")
 		.defer(d3.csv, "data/gender_ratio2010.csv")
+		.defer(d3.csv, "data/gender_ratio_dec.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
 
-	function callback(error, csvData2000, csvData2010, provData, asiaData) {
+	function callback(error, csvData2000, csvData2010, csvDataDec, provData, asiaData) {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
 		setGraticule(map, path);
@@ -64,7 +65,16 @@ function setMap() {
 		setScatterPlot(csvData);
 		createSlider();
 
-
+		var map2 = d3.select(".map2Div")
+			.append("svg")
+			.attr("class", "map2")
+			.attr("width", width)
+			.attr("height", height);
+		setGraticule(map2, path);
+		csvData = csvDataDec;
+		provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
+		colorScale = makeColorScale(csvData);
+		setEnumUnits(provinces, map2, path, colorScale);
 
 	};
 };
@@ -186,7 +196,7 @@ function setScatterPlot(csvData) {
 	var leftPadding = 50;
 	translate = "translate(" + leftPadding + "," + 0 + ")";//moves an element
 
-	var scatterPlot = d3.select("body")
+	var scatterPlot = d3.select(".scatterPlotDiv")
 		.append("svg")
 		.attr("class", "scatterPlot")
 		.attr("width", 600)
@@ -258,7 +268,8 @@ function updateXAxis() {
 
 function setAttrToggle(csvData) {
 	d3.select(".form").remove();
-	var form = d3.select("body")
+
+	var form = d3.select(".attrToggleDiv")
 		.append("form")
 		.attr("class", "form");
 	var labelEnter = form.selectAll("span")
@@ -335,7 +346,7 @@ function updateXScale(csvData) {
 };
 
 function setYearToggle(yearArray) {
-	var form = d3.select("body").append("form");
+	var form = d3.select(".yearToggleDiv").append("form");
 	var labelEnter = form.selectAll("span")
 		.data(yearArray)
 		.enter().
@@ -459,10 +470,6 @@ function moveLabel() {
 };
 
 function createSlider() {
-	d3.select("body")
-		.append("div")
-		.attr("id", "slider");
-
 	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
 		// .on("slide", function() {
 		// 	console.log("sliding"); // change values

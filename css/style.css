@@ -1,3 +1,11 @@
+.map1Div {
+    width: 550px;
+    float: left;
+}
+.map2Div {
+    width: 550px;
+    float: left;
+}
 .gratBackground {
     fill: white;
 }
