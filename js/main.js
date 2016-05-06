@@ -33,7 +33,7 @@ function setMap() {
 	queue()
 		.defer(d3.csv, "data/gender_ratio2000.csv")
 		.defer(d3.csv, "data/gender_ratio2010.csv")
-		.defer(d3.csv, "data/gender_ratio_dec.csv")
+		.defer(d3.csv, "data/gender_ratio_chart.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
