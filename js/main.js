@@ -1,10 +1,10 @@
 window.onload = function() {	
-	setMap();
+	setMap1();
 
 	//may add other functions to implement other elements here
 };
 
-function setMap() {
+function setMap1() {
 	//these variables are glable in function setMap
 	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
 	expressedAttr = "urban_unmarried_m_f";
@@ -33,12 +33,12 @@ function setMap() {
 	queue()
 		.defer(d3.csv, "data/gender_ratio2000.csv")
 		.defer(d3.csv, "data/gender_ratio2010.csv")
-		.defer(d3.csv, "data/gender_ratio_chart.csv")
+		//.defer(d3.csv, "data/gender_ratio_chart.csv") //Don't need
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
 
-	function callback(error, csvData2000, csvData2010, csvDataDec, provData, asiaData) {
+	function callback(error, csvData2000, csvData2010, provData, asiaData) {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
 		setGraticule(map, path);
@@ -63,14 +63,14 @@ function setMap() {
 			.range([50, 580])
 			.domain([800, 10000]);
 		setScatterPlot(csvData);
-		createSlider();
+		//createSlider();
 
-		var map2 = d3.select(".map2Div")
-			.append("svg")
-			.attr("class", "map2")
-			.attr("width", width)
-			.attr("height", height);
-		setGraticule(map2, path);
+		// var map2 = d3.select(".map2Div")
+		// 	.append("svg")
+		// 	.attr("class", "map2")
+		// 	.attr("width", width)
+		// 	.attr("height", height);
+		//setGraticule(map2, path);
 		csvData = csvDataDec;
 		provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
 		colorScale = makeColorScale(csvData);
