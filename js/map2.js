@@ -1,6 +1,8 @@
 //planning to use all orginal map fucntions, and rid of orignial 'map2' functions
 window.onload = function() {	
+	console.log("beforeMap2");
 	setMap2();
+	console.log("map2compelte");
 
 	//may add other functions to implement other elements here
 };
@@ -48,7 +50,7 @@ function setMap2() {
 			.attr("class", "backgroundCountry")
 			.attr("d", path);
 
-		//var csvData = allCsvData[0];
+		var csvDataDec = csvDataDec[0];
 		//provinces = joinData(provinces, csvData);
 		//setAttrToggle(csvData);
 		//setYearToggle(yearArray);
@@ -117,7 +119,6 @@ function joinData(provinces, csvData) {
 					jsonProps[attr] = Math.ceil(val);
 				});
 				jsonProps["region_code"] = csvProv["region_code"];
-				jsonProps["gdp_per_capita"] = csvProv["gdp_per_capita"];
 			};
 		};
 	};

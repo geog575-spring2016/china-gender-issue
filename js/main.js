@@ -1,6 +1,5 @@
 window.onload = function() {	
 	setMap1();
-
 	//may add other functions to implement other elements here
 };
 
@@ -71,10 +70,10 @@ function setMap1() {
 		// 	.attr("width", width)
 		// 	.attr("height", height);
 		//setGraticule(map2, path);
-		csvData = csvDataDec;
-		provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
-		colorScale = makeColorScale(csvData);
-		setEnumUnits(provinces, map2, path, colorScale);
+		//csvData = csvDataDec;
+		//provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
+		//colorScale = makeColorScale(csvData);
+		//setEnumUnits(provinces, map2, path, colorScale);
 
 	};
 };
