@@ -47,10 +47,10 @@ function setMap2() {
 		setGraticule(map, path);
 		map.append("path")
 			.datum(asiaRegion)
-			.attr("class", "backgroundCountry")
+			.attr("class", "backgroundCountry2")
 			.attr("d", path);
 
-		var csvDataDec = csvDataDec[0];
+		//var csvDataDec = csvDataDec[0];
 		//provinces = joinData(provinces, csvData);
 		//setAttrToggle(csvData);
 		//setYearToggle(yearArray);
