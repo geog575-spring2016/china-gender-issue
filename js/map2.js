@@ -3,16 +3,12 @@ window.onload = function() {
 	console.log("beforeMap2");
 	setMap2();
 	console.log("map2compelte");
-
-	//may add other functions to implement other elements here
 };
 
 function setMap2() {
 	//these variables are glable in function setMap
 	attrArray = ["1950","1955","1960","1965","1970","1975", "1980","1985","1990","1995","2000","2005"];
 	expressedAttr = "2000";
-//	yearArray = [2000, 2010];
-//	expressedYear = 2000;
 
 	
 	var width = 500, height = 500;
@@ -34,8 +30,6 @@ function setMap2() {
 		.projection(projection);
 
 	queue()
-	//	.defer(d3.csv, "data/gender_ratio2000.csv")//don't need
-	//	.defer(d3.csv, "data/gender_ratio2010.csv") //don't need
 		.defer(d3.csv, "data/gender_ratio_chart.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
@@ -47,14 +41,10 @@ function setMap2() {
 		setGraticule(map, path);
 		map.append("path")
 			.datum(asiaRegion)
-			.attr("class", "backgroundCountry2")
+			.attr("class", "backgroundCountry")
 			.attr("d", path);
 
-		//var csvDataDec = csvDataDec[0];
-		//provinces = joinData(provinces, csvData);
-		//setAttrToggle(csvData);
-		//setYearToggle(yearArray);
-		console.log(csvDataDec);
+		
 		provinces = joinData(provinces, csvDataDec);
 
 		var colorScale = makeColorScale(csvDataDec);
@@ -62,25 +52,9 @@ function setMap2() {
 
 		setEnumUnits(provinces, map, path, colorScale);
 
-		// yScale = d3.scale.linear()
-		// 	.range([20, 550])
-		// 	.domain([150, 100]);
-		// xScale = d3.scale.linear()
-		// 	.range([50, 580])
-		// 	.domain([800, 10000]);
-		// setScatterPlot(csvData);
-		createSlider();
+		var slider = createSlider();
 
-		// var map2 = d3.select(".map2Div")
-		// 	.append("svg")
-		// 	.attr("class", "map2")
-		// 	.attr("width", width)
-		// 	.attr("height", height);
-		//setGraticule(map2, path);
-	//	csvData = csvDataDec;
-		//provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
-		//colorScale = makeColorScale(csvData);
-		//setEnumUnits(provinces, map2, path, colorScale);
+		updateSlider(csvDataDec, slider);
 
 	};
 };
@@ -380,16 +354,15 @@ function updateEnumUnits(csvData) {
 // };
 
 // function changeYear(yearIndex) {
-// 	expressedYear = yearArray[yearIndex];
-// 	var csvData = allCsvData[yearIndex];
-// 	updateEnumUnits(csvData);
-// 	updateYScale(csvData);
-// 	updateXScale(csvData);
-// 	updateYAxis();
-// 	updateXAxis();
-// 	updateScatterPlot(csvData);
+// 	expressedAttr = attrArray[yearIndex];
+// 	updateEnumUnits(csvDataDec);
+// 	// updateYScale(csvDataDec);
+// 	// updateXScale(csvData);
+// 	// updateYAxis();
+// 	// updateXAxis();
+// 	// updateScatterPlot(csvData);
 // 	//reset attribute toggle so that the new form is based on current csvData
-// 	setAttrToggle(csvData);
+// 	// setAttrToggle(csvData);
 // };
 
 function highlight(props) {
@@ -484,12 +457,30 @@ function moveLabel() {
 
 function createSlider() {
 	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
-		//append to sli
+	//var slider = d3.slider().rangePoints([1950,2005], 5);
 
-		// .on("slide", function() {
-		// 	console.log("sliding"); // change values
-		// });
+
+
+
 
 	d3.select("#slider").call(slider);
 
+	return slider;
+
 };
+
+function updateSlider(csvData, slider) {
+
+			slider.on("slide", function(evt, value) {
+		 	console.log("sliding"); // change values
+		 	var yearIndex =value;
+		 	console.log(attrArray);
+		 	console.log(yearIndex);
+		 	expressedAttr = attrArray[yearIndex];
+			//updateEnumUnits(csvDataDec);
+		});
+
+
+
+	//d3.select("#slider").call(slider);
+}
