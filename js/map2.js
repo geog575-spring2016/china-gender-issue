@@ -8,7 +8,7 @@ window.onload = function() {
 function setMap2() {
 	//these variables are glable in function setMap
 	attrArray = ["1950","1955","1960","1965","1970","1975", "1980","1985","1990","1995","2000","2005"];
-	expressedAttr = "2000";
+	expressedAttr = "2005";
 
 	
 	var width = 500, height = 500;
@@ -51,11 +51,10 @@ function setMap2() {
 
 
 		setEnumUnits(provinces, map, path, colorScale);
+		console.log(provinces);
 
-		var slider = createSlider();
-
-		updateSlider(csvDataDec, slider);
-
+		//var slider = 
+		createSlider(csvDataDec);
 	};
 };
 
@@ -103,6 +102,7 @@ function joinData(provinces, csvData) {
 
 function setEnumUnits(provinces, map, path, colorScale) {
 	// select all must take a list, should be a list of features, not the whole feature collection
+	console.log(provinces);
 	var enumUnits = map.selectAll(".enumUnits")
 		.data(provinces)
 		.enter()
@@ -282,7 +282,7 @@ function choropleth(props, colorScale) {
 // 	labelEnter.append("label").text(function(d) {return d;});
 // };
 
-function updateEnumUnits(csvData) {
+function updateEnumUnits(csvData) { //csvdata is an array of the new data
 	var colorScale = makeColorScale(csvData);
 	d3.selectAll(".enumUnits")
 		.transition()
@@ -455,32 +455,58 @@ function moveLabel() {
 		});
 };
 
-function createSlider() {
-	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
+function createSlider(csvData) {
+	var slider = d3.slider().axis(true).min(1950).max(2005).step(5).on("slide", function(evt, value){
+		expressedAttr = value;//attrArray[yearIndex];
+	 	console.log(expressedAttr);
+
+		updateEnumUnits(csvData); 
+	});
 	//var slider = d3.slider().rangePoints([1950,2005], 5);
 
+	// slider.on("slide", function(evt, value) {
+	//  	// console.log("sliding"); // change values TRUE
+	//  	// var yearIndex =value;
+	//  	// console.log(attrArray);
+	//  	// console.log(yearIndex);
 
+	//  	expressedAttr = value;//attrArray[yearIndex];
+	//  	console.log(expressedAttr);
+
+	// 	updateEnumUnits(expressedAttr); //passes an array of data values
+	// });
 
 
 
 	d3.select("#slider").call(slider);
 
-	return slider;
+
+	// updateSlider(csvDataDec, slider);
+
 
 };
 
-function updateSlider(csvData, slider) {
-
-			slider.on("slide", function(evt, value) {
-		 	console.log("sliding"); // change values
-		 	var yearIndex =value;
-		 	console.log(attrArray);
-		 	console.log(yearIndex);
-		 	expressedAttr = attrArray[yearIndex];
-			//updateEnumUnits(csvDataDec);
-		});
+// function updateSlider(csvData, slider) { //don't need new array as param here ? 
 
 
 
-	//d3.select("#slider").call(slider);
-}
+
+
+
+
+// 	// slider.on("slide", function(evt, value) {
+// 	//  	// console.log("sliding"); // change values TRUE
+// 	//  	// var yearIndex =value;
+// 	//  	// console.log(attrArray);
+// 	//  	// console.log(yearIndex);
+
+// 	//  	expressedAttr = value;//attrArray[yearIndex];
+// 	//  	console.log(expressedAttr);
+
+// 	// 	updateEnumUnits(expressedAttr); //passes an array of data values
+// 	// });
+
+
+
+// 	//d3.select("#slider").call(slider);
+// }
