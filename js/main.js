@@ -1,5 +1,7 @@
 window.onload = function() {	
+	console.log("beginmap1");
 	setMap1();
+	console.log("map1finish");
 	//may add other functions to implement other elements here
 };
 

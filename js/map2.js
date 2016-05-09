@@ -54,6 +54,7 @@ function setMap2() {
 		//provinces = joinData(provinces, csvData);
 		//setAttrToggle(csvData);
 		//setYearToggle(yearArray);
+		console.log(csvDataDec);
 		provinces = joinData(provinces, csvDataDec);
 
 		var colorScale = makeColorScale(csvDataDec);
@@ -166,9 +167,12 @@ function makeColorScale(data) {
 		.range(colorClasses);
 
 	//build array of all values of the expressedAttr attribute
+	console.log(data);
 	var domainArray = [];
 	for (var i = 0; i < data.length-1; i++){ // (-1) as to not include region_code part of data
+
 		var val = parseFloat(data[i][expressedAttr]);
+		console.log(val);
 		domainArray.push(val);
 	};
 	console.log(domainArray); //works
