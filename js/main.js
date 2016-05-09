@@ -8,8 +8,8 @@ function setMap() {
 	//these variables are glable in function setMap
 	attrArray = ["urban_unmarried_m_f","rural_unmarried_m_f","urban_newborn_m_f","rural_newborn_m_f"];
 	expressedAttr = "urban_unmarried_m_f";
-	yearArray = [2000, 2010];
-	expressedYear = 2000;
+	// yearArray = [2000, 2010];
+	// expressedYear = 2000;
 
 	
 	var width = 500, height = 500;
@@ -31,14 +31,13 @@ function setMap() {
 		.projection(projection);
 
 	queue()
-		.defer(d3.csv, "data/gender_ratio2000.csv")
 		.defer(d3.csv, "data/gender_ratio2010.csv")
 		.defer(d3.csv, "data/gender_ratio_chart.csv")
 		.defer(d3.json, "data/ChinaProvinces.topojson")
 		.defer(d3.json, "data/AsiaRegion_6simplified.topojson")
 		.await(callback); //send data to callback function once finish loading
 
-	function callback(error, csvData2000, csvData2010, csvDataDec, provData, asiaData) {
+	function callback(error, csvData2010, csvDataDec, provData, asiaData) {
 		var asiaRegion = topojson.feature(asiaData, asiaData.objects.AsiaRegion);
 		var provinces = topojson.feature(provData, provData.objects.collection).features;
 		setGraticule(map, path);
@@ -47,34 +46,33 @@ function setMap() {
 			.attr("class", "backgroundCountry")
 			.attr("d", path);
 
-		allCsvData = [csvData2000, csvData2010];
-		var csvData = allCsvData[0];
+		var csvData = csvData2010;
 		provinces = joinData(provinces, csvData);
 		setAttrToggle(csvData);
-		setYearToggle(yearArray);
+		//setYearToggle(yearArray);
 
 		var colorScale = makeColorScale(csvData);
 		setEnumUnits(provinces, map, path, colorScale);
 
 		yScale = d3.scale.linear()
 			.range([20, 550])
-			.domain([150, 100]);
+			.domain([140, 100]).nice();
 		xScale = d3.scale.linear()
 			.range([50, 580])
-			.domain([800, 10000]);
+			.domain([3000, 20000]).nice();
 		setScatterPlot(csvData);
 		createSlider();
 
-		var map2 = d3.select(".map2Div")
-			.append("svg")
-			.attr("class", "map2")
-			.attr("width", width)
-			.attr("height", height);
-		setGraticule(map2, path);
-		csvData = csvDataDec;
-		provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
-		colorScale = makeColorScale(csvData);
-		setEnumUnits(provinces, map2, path, colorScale);
+		// var map2 = d3.select(".map2Div")
+		// 	.append("svg")
+		// 	.attr("class", "map2")
+		// 	.attr("width", width)
+		// 	.attr("height", height);
+		// setGraticule(map2, path);
+		// csvData = csvDataDec;
+		// provinces = joinData(topojson.feature(provData, provData.objects.collection).features, csvData);
+		// colorScale = makeColorScale(csvData);
+		// setEnumUnits(provinces, map2, path, colorScale);
 
 	};
 };
@@ -323,61 +321,61 @@ function updateYScale(csvData) {
 
 	yScale = d3.scale.linear()
 		.range([20, 550])
-		.domain([maxVal + 5, minVal - 5]);
+		.domain([maxVal + 5, minVal - 5]).nice();
 
 };
 
-function updateXScale(csvData) {
-	var maxGDP = 0;
-	var minGDP = 1000000;
-	for (var i = 0; i < csvData.length; i++) {
-		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
-		if (currGDP < minGDP) {
-			minGDP = currGDP;
-		};
-		if (currGDP > maxGDP) {
-			maxGDP = currGDP;
-		};
-	};
+// function updateXScale(csvData) {
+// 	var maxGDP = 0;
+// 	var minGDP = 1000000;
+// 	for (var i = 0; i < csvData.length; i++) {
+// 		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
+// 		if (currGDP < minGDP) {
+// 			minGDP = currGDP;
+// 		};
+// 		if (currGDP > maxGDP) {
+// 			maxGDP = currGDP;
+// 		};
+// 	};
 
-	xScale = d3.scale.linear()
-		.range([50, 580])
-		.domain([minGDP - 100, maxGDP + 100])
-};
+// 	xScale = d3.scale.linear()
+// 		.range([50, 580])
+// 		.domain([minGDP - 100, maxGDP + 100]).nice();
+// };
 
-function setYearToggle(yearArray) {
-	var form = d3.select(".yearToggleDiv").append("form");
-	var labelEnter = form.selectAll("span")
-		.data(yearArray)
-		.enter().
-		append("span");
-	labelEnter.append("input")
-		.attr("type", "radio")
-		.attr("name", "year")
-		.attr("value", function(d, i) {return i;})
-		.attr("checked", function(d) { //set the initially checked button
-			if (d == 2000) {
-				return "checked";
-			}
-		})
-		.on("change", function(){
-			changeYear(this.value);
-		})
-	labelEnter.append("label").text(function(d) {return d;});
-};
+// function setYearToggle(yearArray) {
+// 	var form = d3.select(".yearToggleDiv").append("form");
+// 	var labelEnter = form.selectAll("span")
+// 		.data(yearArray)
+// 		.enter().
+// 		append("span");
+// 	labelEnter.append("input")
+// 		.attr("type", "radio")
+// 		.attr("name", "year")
+// 		.attr("value", function(d, i) {return i;})
+// 		.attr("checked", function(d) { //set the initially checked button
+// 			if (d == 2000) {
+// 				return "checked";
+// 			}
+// 		})
+// 		.on("change", function(){
+// 			changeYear(this.value);
+// 		})
+// 	labelEnter.append("label").text(function(d) {return d;});
+// };
 
-function changeYear(yearIndex) {
-	expressedYear = yearArray[yearIndex];
-	var csvData = allCsvData[yearIndex];
-	updateEnumUnits(csvData);
-	updateYScale(csvData);
-	updateXScale(csvData);
-	updateYAxis();
-	updateXAxis();
-	updateScatterPlot(csvData);
-	//reset attribute toggle so that the new form is based on current csvData
-	setAttrToggle(csvData);
-};
+// function changeYear(yearIndex) {
+// 	expressedYear = yearArray[yearIndex];
+// 	var csvData = allCsvData[yearIndex];
+// 	updateEnumUnits(csvData);
+// 	updateYScale(csvData);
+// 	updateXScale(csvData);
+// 	updateYAxis();
+// 	updateXAxis();
+// 	updateScatterPlot(csvData);
+// 	//reset attribute toggle so that the new form is based on current csvData
+// 	setAttrToggle(csvData);
+// };
 
 function highlight(props) {
 	//!!This selection won't work for names with multiple space
