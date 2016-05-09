@@ -19,6 +19,7 @@ d3.csv("data/gender_ratio_chart.csv", type, function(error, provinces) {
 });
 
 function callback(error, provinces) {
+	console.log(provinces);
 	x.domain(d3.extent(years));
 	y.domain([90, 140]);
 
@@ -45,6 +46,7 @@ function callback(error, provinces) {
 		.selectAll("path")
 		.data(provinces)
 		.enter().append("path")
+		.attr("id", function(d) {return "line" + d["region_code"];})
 		.attr("d", function(d) { d.line = this; return line(d.values); });
 
 	var focus = linegraph.append("g")
@@ -81,19 +83,30 @@ function callback(error, provinces) {
 		d.province.line.parentNode.appendChild(d.province.line);
 		focus.attr("transform", "translate(" + x(d.date) + "," + y(d.value) + ")");
 		focus.select("text").text(d.province.name);
+		//TODO: style later
+		d3.select("." + d.province.region_code)
+			.style({
+				"stroke": "blue",
+				"stroke-width": "2"
+			});
 	}
 
 	function mouseout(d) {
 		d3.select(d.province.line).classed("province--hover", false);
 		focus.attr("transform", "translate(-100,-100)");
+		//TODO: style later
+		d3.select("." + d.province.region_code)
+			.style("stroke", "#000")
+			.style("stroke-width", "0.5px");
 	}
 };
 
 var line = d3.svg.line()
+		.interpolate("monotone")//better curved shape
 		.x(function(d) { return x(d.date); })
 		.y(function(d) { return y(d.value); });
 
-var linegraph = d3.select("body").append("svg")
+var linegraph = d3.select(".linegraph").append("svg")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
 	.attr("class", "linegraph")
@@ -106,9 +119,11 @@ function type(d, i) {
 	if (!i) years = Object.keys(d).filter(Number);
 	var province = {
 		name: d.name,
+		region_code: null,
 		values: null
 	};
 	//m is every key in current csv line
+	province.region_code = d["region_code"];
 	province.values = years.map(function(m) {
 		return {
 			province: province,

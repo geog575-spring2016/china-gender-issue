@@ -1,11 +1,9 @@
 //planning to use all orginal map fucntions, and rid of orignial 'map2' functions
 window.onload = function() {	
-	console.log("beforeMap2");
-	setMap2();
-	console.log("map2compelte");
+	setMap();
 };
 
-function setMap2() {
+function setMap() {
 	//these variables are glable in function setMap
 	attrArray = ["1950","1955","1960","1965","1970","1975", "1980","1985","1990","1995","2000","2005"];
 	expressedAttr = "2005";
@@ -43,17 +41,11 @@ function setMap2() {
 			.datum(asiaRegion)
 			.attr("class", "backgroundCountry")
 			.attr("d", path);
-
-		
+	
 		provinces = joinData(provinces, csvDataDec);
-
 		var colorScale = makeColorScale(csvDataDec);
 
-
 		setEnumUnits(provinces, map, path, colorScale);
-		console.log(provinces);
-
-		//var slider = 
 		createSlider(csvDataDec);
 	};
 };
@@ -96,13 +88,11 @@ function joinData(provinces, csvData) {
 			};
 		};
 	};
-	console.log(provinces);
 	return provinces;
 };
 
 function setEnumUnits(provinces, map, path, colorScale) {
 	// select all must take a list, should be a list of features, not the whole feature collection
-	console.log(provinces);
 	var enumUnits = map.selectAll(".enumUnits")
 		.data(provinces)
 		.enter()
@@ -127,7 +117,6 @@ function setEnumUnits(provinces, map, path, colorScale) {
 };
 
 function makeColorScale(data) {
-	console.log("begin mmakeColorscale");
 	//data is an array of provinces
 	var colorClasses = [
 		"#fee5d9",
@@ -141,18 +130,14 @@ function makeColorScale(data) {
 		.range(colorClasses);
 
 	//build array of all values of the expressedAttr attribute
-	console.log(data);
 	var domainArray = [];
 	for (var i = 0; i < data.length-1; i++){ // (-1) as to not include region_code part of data
 
 		var val = parseFloat(data[i][expressedAttr]);
-		console.log(val);
 		domainArray.push(val);
 	};
-	console.log(domainArray); //works
 	//cluster data using ckmeans clustering algorithm to create natural breaks
 	var clusters = ss.ckmeans(domainArray, 5); //cannot generate more classs then there are data values
-	console.log("line"); //does not work
 	//reset domain array to cluster minimums
 	domainArray = clusters.map(function(d) {
 		return d3.min(d);
@@ -163,7 +148,6 @@ function makeColorScale(data) {
 
 	//assign array of last 4 cluster minimums as domain
 	colorScale.domain(domainArray);
-	console.log("colorscale compelte"); //we did not make it here
 	return colorScale; 
 }
 
@@ -179,109 +163,6 @@ function choropleth(props, colorScale) {
 	};
 };
 
-// function setScatterPlot(csvData) {
-// 	var leftPadding = 50;
-// 	translate = "translate(" + leftPadding + "," + 0 + ")";//moves an element
-
-// 	var scatterPlot = d3.select(".scatterPlotDiv")
-// 		.append("svg")
-// 		.attr("class", "scatterPlot")
-// 		.attr("width", 600)
-// 		.attr("height", 600);
-
-// 	// var scatterPlotInnerWidth = 500,
-// 	// 	scatterPlotInnerHeight = 500;
-	
-// 	// var scatterPlotBackground = scatterPlot.append("rect")
-// 	//     .attr("class", "scatterPlotBackground")
-//  //        .attr("width", scatterPlotInnerWidth)
-//  //        .attr("height", scatterPlotInnerHeight)
-//  //        .attr("transform", translate);
-
-// 	updateScatterPlot(csvData);
-// 	updateYAxis();
-// 	updateXAxis();
-// };
-
-// //TODO: try to change scatterplot to bind to multiple year sets
-// function updateScatterPlot(csvData) {
-// 	d3.selectAll(".dataPoints").remove();
-// 	var scatterPlot = d3.select(".scatterPlot");
-// 	scatterPlot.selectAll(".dataPoints")
-// 		.data(csvData)
-// 		.enter()
-// 		.append("circle")
-// 		.attr("class", function(d) {
-// 			return "dataPoints " + d.region_code;
-// 		})
-// 		.attr("cy", function(d) {
-// 			return yScale(d[expressedAttr]);
-// 		})
-// 		.attr("cx", function(d) {
-// 			return xScale(d["gdp_per_capita"]);
-// 		})
-// 		.attr("r", 5)
-// 		.attr("translate", translate)
-// 		.on("mouseover", highlight)
-// 		.on("mouseout", dehighlight)
-// 		.on("mousemove", moveLabel);
-// };
-
-// function updateYAxis() {
-// 	d3.select(".yAxis").remove();
-// 	var yAxis = d3.svg.axis()
-// 		.scale(yScale)
-// 		.orient("left");
-
-// 	var scatterPlot = d3.select(".scatterPlot");
-// 	scatterPlot.append("g")
-// 		.attr("class", "yAxis")
-// 		.attr("transform", translate)
-// 		.call(yAxis);
-// };
-
-// function updateXAxis() {
-// 	d3.select(".xAxis").remove();
-// 	var xAxis = d3.svg.axis()
-// 		.scale(xScale)
-// 		.orient("bottom");
-
-// 	var scatterPlot = d3.select(".scatterPlot");
-// 	scatterPlot.append("g")
-// 		.attr("class", "xAxis")
-// 		.attr("transform", "translate(0," + 550 + ")")
-// 		.call(xAxis);
-// };
-
-// function setAttrToggle(csvData) {
-// 	d3.select(".form").remove();
-
-// 	var form = d3.select(".attrToggleDiv")
-// 		.append("form")
-// 		.attr("class", "form");
-// 	var labelEnter = form.selectAll("span")
-// 		.data(attrArray)
-// 		.enter().
-// 		append("span");
-// 	labelEnter.append("input")
-// 		.attr("type", "radio")
-// 		.attr("name", "attr")
-// 		.attr("value", function(d, i) {return i;})
-// 		.attr("checked", function(d) { //set the initially checked button
-// 			if (d == expressedAttr) {
-// 				return "checked";
-// 			}
-// 		})
-// 		.on("change", function(){
-// 			expressedAttr = attrArray[this.value];
-// 			updateEnumUnits(csvData);
-// 			updateYScale(csvData);
-// 			updateScatterPlot(csvData);
-// 			updateYAxis();
-// 		});
-// 	labelEnter.append("label").text(function(d) {return d;});
-// };
-
 function updateEnumUnits(csvData) { //csvdata is an array of the new data
 	var colorScale = makeColorScale(csvData);
 	d3.selectAll(".enumUnits")
@@ -292,79 +173,6 @@ function updateEnumUnits(csvData) { //csvdata is an array of the new data
 		});
 };
 
-// function updateYScale(csvData) {
-// 	//change range to be
-// 	//min of expressedAttr attribute
-// 	//max of expressedAttr attribute
-// 	var maxVal = 0;
-// 	var minVal = 10000;
-// 	for (var i = 0; i < csvData.length; i++) {
-// 		var currExpressedVal = Math.ceil(csvData[i][expressedAttr]);
-// 		if (currExpressedVal < minVal) {
-// 			minVal = currExpressedVal;
-// 		};
-// 		if (currExpressedVal > maxVal) {
-// 			maxVal = currExpressedVal;
-// 		};
-// 	};
-
-// 	yScale = d3.scale.linear()
-// 		.range([20, 550])
-// 		.domain([maxVal + 5, minVal - 5]);
-
-// };
-
-// function updateXScale(csvData) {
-// 	var maxGDP = 0;
-// 	var minGDP = 1000000;
-// 	for (var i = 0; i < csvData.length; i++) {
-// 		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
-// 		if (currGDP < minGDP) {
-// 			minGDP = currGDP;
-// 		};
-// 		if (currGDP > maxGDP) {
-// 			maxGDP = currGDP;
-// 		};
-// 	};
-
-// 	xScale = d3.scale.linear()
-// 		.range([50, 580])
-// 		.domain([minGDP - 100, maxGDP + 100])
-// };
-
-// function setYearToggle(yearArray) {
-// 	var form = d3.select(".yearToggleDiv").append("form");
-// 	var labelEnter = form.selectAll("span")
-// 		.data(yearArray)
-// 		.enter().
-// 		append("span");
-// 	labelEnter.append("input")
-// 		.attr("type", "radio")
-// 		.attr("name", "year")
-// 		.attr("value", function(d, i) {return i;})
-// 		.attr("checked", function(d) { //set the initially checked button
-// 			if (d == 2000) {
-// 				return "checked";
-// 			}
-// 		})
-// 		.on("change", function(){
-// 			changeYear(this.value);
-// 		})
-// 	labelEnter.append("label").text(function(d) {return d;});
-// };
-
-// function changeYear(yearIndex) {
-// 	expressedAttr = attrArray[yearIndex];
-// 	updateEnumUnits(csvDataDec);
-// 	// updateYScale(csvDataDec);
-// 	// updateXScale(csvData);
-// 	// updateYAxis();
-// 	// updateXAxis();
-// 	// updateScatterPlot(csvData);
-// 	//reset attribute toggle so that the new form is based on current csvData
-// 	// setAttrToggle(csvData);
-// };
-
 function highlight(props) {
 	//!!This selection won't work for names with multiple space
 	d3.selectAll("." + props.region_code)
@@ -372,6 +180,10 @@ function highlight(props) {
 			"stroke": "blue",
 			"stroke-width": "2"
 		});
+	var line = d3.select("#line" + props.region_code).classed("province--hover", true);
+	//readd to parent node to make sure the line show up first
+	var provinces = d3.select(".provinces")[0][0];
+	provinces.appendChild(line[0][0]);
 
 	setLabel(props);
 }
@@ -403,6 +215,7 @@ function dehighlight(props) {
 	// };
 
 	d3.select(".infolabel").remove();
+	d3.select("#line" + props.region_code).classed("province--hover", false);
 };
 
 //set label, now is appended to body as div
@@ -457,56 +270,11 @@ function moveLabel() {
 
 function createSlider(csvData) {
 	var slider = d3.slider().axis(true).min(1950).max(2005).step(5).on("slide", function(evt, value){
-		expressedAttr = value;//attrArray[yearIndex];
-	 	
-
+		expressedAttr = value;
 		updateEnumUnits(csvData); 
 	});
-	//var slider = d3.slider().rangePoints([1950,2005], 5);
 
-	// slider.on("slide", function(evt, value) {
-	//  	// console.log("sliding"); // change values TRUE
-	//  	// var yearIndex =value;
-	//  	// console.log(attrArray);
-	//  	// console.log(yearIndex);
-
-	//  	expressedAttr = value;//attrArray[yearIndex];
-	//  	console.log(expressedAttr);
-
-	// 	updateEnumUnits(expressedAttr); //passes an array of data values
-	// });
-
-
-
-	d3.select("#slider").call(slider);
-
-
-	// updateSlider(csvDataDec, slider);
-
-
+	d3.select(".map2Div").append("div")
+		.attr("id", "slider")
+		.call(slider);
 };
-
-// function updateSlider(csvData, slider) { //don't need new array as param here ? 
-
-
-
-
-
-
-
-// 	// slider.on("slide", function(evt, value) {
-// 	//  	// console.log("sliding"); // change values TRUE
-// 	//  	// var yearIndex =value;
-// 	//  	// console.log(attrArray);
-// 	//  	// console.log(yearIndex);
-
-// 	//  	expressedAttr = value;//attrArray[yearIndex];
-// 	//  	console.log(expressedAttr);
-
-// 	// 	updateEnumUnits(expressedAttr); //passes an array of data values
-// 	// });
-
-
-
-// 	//d3.select("#slider").call(slider);
-// }
