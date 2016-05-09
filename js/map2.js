@@ -9,8 +9,8 @@ window.onload = function() {
 
 function setMap2() {
 	//these variables are glable in function setMap
-//	attrArray = ["1950","1955","1960","1965","1970","1975", "1980","1985","1990","1995","2000","2005"];
-//	expressedAttr = "2000";
+	attrArray = ["1950","1955","1960","1965","1970","1975", "1980","1985","1990","1995","2000","2005"];
+	expressedAttr = "2000";
 //	yearArray = [2000, 2010];
 //	expressedYear = 2000;
 
@@ -122,6 +122,7 @@ function joinData(provinces, csvData) {
 			};
 		};
 	};
+	console.log(provinces);
 	return provinces;
 };
 
@@ -151,6 +152,7 @@ function setEnumUnits(provinces, map, path, colorScale) {
 };
 
 function makeColorScale(data) {
+	console.log("begin mmakeColorscale");
 	//data is an array of provinces
 	var colorClasses = [
 		"#fee5d9",
@@ -165,22 +167,25 @@ function makeColorScale(data) {
 
 	//build array of all values of the expressedAttr attribute
 	var domainArray = [];
-	for (var i = 0; i < data.length; i++){
+	for (var i = 0; i < data.length-1; i++){ // (-1) as to not include region_code part of data
 		var val = parseFloat(data[i][expressedAttr]);
 		domainArray.push(val);
 	};
-
+	console.log(domainArray); //works
 	//cluster data using ckmeans clustering algorithm to create natural breaks
-	var clusters = ss.ckmeans(domainArray, 5);
+	var clusters = ss.ckmeans(domainArray, 5); //cannot generate more classs then there are data values
+	console.log("line"); //does not work
 	//reset domain array to cluster minimums
 	domainArray = clusters.map(function(d) {
 		return d3.min(d);
 	});
+
 	//remove first value from domain array to create class breakpoints
 	domainArray.shift();
+
 	//assign array of last 4 cluster minimums as domain
 	colorScale.domain(domainArray);
-
+	console.log("colorscale compelte"); //we did not make it here
 	return colorScale; 
 }
 
@@ -309,79 +314,79 @@ function updateEnumUnits(csvData) {
 		});
 };
 
-function updateYScale(csvData) {
-	//change range to be
-	//min of expressedAttr attribute
-	//max of expressedAttr attribute
-	var maxVal = 0;
-	var minVal = 10000;
-	for (var i = 0; i < csvData.length; i++) {
-		var currExpressedVal = Math.ceil(csvData[i][expressedAttr]);
-		if (currExpressedVal < minVal) {
-			minVal = currExpressedVal;
-		};
-		if (currExpressedVal > maxVal) {
-			maxVal = currExpressedVal;
-		};
-	};
+// function updateYScale(csvData) {
+// 	//change range to be
+// 	//min of expressedAttr attribute
+// 	//max of expressedAttr attribute
+// 	var maxVal = 0;
+// 	var minVal = 10000;
+// 	for (var i = 0; i < csvData.length; i++) {
+// 		var currExpressedVal = Math.ceil(csvData[i][expressedAttr]);
+// 		if (currExpressedVal < minVal) {
+// 			minVal = currExpressedVal;
+// 		};
+// 		if (currExpressedVal > maxVal) {
+// 			maxVal = currExpressedVal;
+// 		};
+// 	};
 
-	yScale = d3.scale.linear()
-		.range([20, 550])
-		.domain([maxVal + 5, minVal - 5]);
+// 	yScale = d3.scale.linear()
+// 		.range([20, 550])
+// 		.domain([maxVal + 5, minVal - 5]);
 
-};
+// };
 
-function updateXScale(csvData) {
-	var maxGDP = 0;
-	var minGDP = 1000000;
-	for (var i = 0; i < csvData.length; i++) {
-		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
-		if (currGDP < minGDP) {
-			minGDP = currGDP;
-		};
-		if (currGDP > maxGDP) {
-			maxGDP = currGDP;
-		};
-	};
+// function updateXScale(csvData) {
+// 	var maxGDP = 0;
+// 	var minGDP = 1000000;
+// 	for (var i = 0; i < csvData.length; i++) {
+// 		var currGDP = parseInt(csvData[i]["gdp_per_capita"]);
+// 		if (currGDP < minGDP) {
+// 			minGDP = currGDP;
+// 		};
+// 		if (currGDP > maxGDP) {
+// 			maxGDP = currGDP;
+// 		};
+// 	};
 
-	xScale = d3.scale.linear()
-		.range([50, 580])
-		.domain([minGDP - 100, maxGDP + 100])
-};
+// 	xScale = d3.scale.linear()
+// 		.range([50, 580])
+// 		.domain([minGDP - 100, maxGDP + 100])
+// };
 
-function setYearToggle(yearArray) {
-	var form = d3.select(".yearToggleDiv").append("form");
-	var labelEnter = form.selectAll("span")
-		.data(yearArray)
-		.enter().
-		append("span");
-	labelEnter.append("input")
-		.attr("type", "radio")
-		.attr("name", "year")
-		.attr("value", function(d, i) {return i;})
-		.attr("checked", function(d) { //set the initially checked button
-			if (d == 2000) {
-				return "checked";
-			}
-		})
-		.on("change", function(){
-			changeYear(this.value);
-		})
-	labelEnter.append("label").text(function(d) {return d;});
-};
+// function setYearToggle(yearArray) {
+// 	var form = d3.select(".yearToggleDiv").append("form");
+// 	var labelEnter = form.selectAll("span")
+// 		.data(yearArray)
+// 		.enter().
+// 		append("span");
+// 	labelEnter.append("input")
+// 		.attr("type", "radio")
+// 		.attr("name", "year")
+// 		.attr("value", function(d, i) {return i;})
+// 		.attr("checked", function(d) { //set the initially checked button
+// 			if (d == 2000) {
+// 				return "checked";
+// 			}
+// 		})
+// 		.on("change", function(){
+// 			changeYear(this.value);
+// 		})
+// 	labelEnter.append("label").text(function(d) {return d;});
+// };
 
-function changeYear(yearIndex) {
-	expressedYear = yearArray[yearIndex];
-	var csvData = allCsvData[yearIndex];
-	updateEnumUnits(csvData);
-	updateYScale(csvData);
-	updateXScale(csvData);
-	updateYAxis();
-	updateXAxis();
-	updateScatterPlot(csvData);
-	//reset attribute toggle so that the new form is based on current csvData
-	setAttrToggle(csvData);
-};
+// function changeYear(yearIndex) {
+// 	expressedYear = yearArray[yearIndex];
+// 	var csvData = allCsvData[yearIndex];
+// 	updateEnumUnits(csvData);
+// 	updateYScale(csvData);
+// 	updateXScale(csvData);
+// 	updateYAxis();
+// 	updateXAxis();
+// 	updateScatterPlot(csvData);
+// 	//reset attribute toggle so that the new form is based on current csvData
+// 	setAttrToggle(csvData);
+// };
 
 function highlight(props) {
 	//!!This selection won't work for names with multiple space
@@ -475,6 +480,8 @@ function moveLabel() {
 
 function createSlider() {
 	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
+		//append to sli
+
 		// .on("slide", function() {
 		// 	console.log("sliding"); // change values
 		// });

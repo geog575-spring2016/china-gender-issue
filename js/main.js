@@ -468,12 +468,12 @@ function moveLabel() {
 		});
 };
 
-function createSlider() {
-	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
-		// .on("slide", function() {
-		// 	console.log("sliding"); // change values
-		// });
+// function createSlider() {
+// 	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
+// 		// .on("slide", function() {
+// 		// 	console.log("sliding"); // change values
+// 		// });
 
-	d3.select("#slider").call(slider);
+// 	d3.select("#slider").call(slider);
 
-};
+// };
