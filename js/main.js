@@ -138,8 +138,6 @@ function makeColorScale(data) {
 			var val = parseFloat(data[i][attr]);
 			domainArray.push(val);
 		});
-		// var val = parseFloat(data[i][expressedAttr]);
-		// domainArray.push(val);
 	};
 	//cluster data using ckmeans clustering algorithm to create natural breaks
 	var clusters = ss.ckmeans(domainArray, 7);
@@ -176,15 +174,6 @@ function setScatterPlot(csvData) {
 		.attr("class", "scatterPlot")
 		.attr("width", 600)
 		.attr("height", 550);
-
-	// var scatterPlotInnerWidth = 500,
-	// 	scatterPlotInnerHeight = 500;
-	
-	// var scatterPlotBackground = scatterPlot.append("rect")
-	//     .attr("class", "scatterPlotBackground")
- //        .attr("width", scatterPlotInnerWidth)
- //        .attr("height", scatterPlotInnerHeight)
- //        .attr("transform", translate);
 
 	updateScatterPlot(csvData);
 	updateYAxis();
@@ -226,7 +215,12 @@ function updateYAxis() {
 	scatterPlot.append("g")
 		.attr("class", "yAxis")
 		.attr("transform", translate)
-		.call(yAxis);
+		.call(yAxis)
+		.append("text")
+		.attr("x", 4)
+		.attr("dy", "1.8em")
+		.style("font-size", "1.1em")
+		.text("Sex-ratio in 2010");
 };
 
 function updateXAxis() {
@@ -239,7 +233,12 @@ function updateXAxis() {
 	scatterPlot.append("g")
 		.attr("class", "xAxis")
 		.attr("transform", "translate(0," + 450 + ")")
-		.call(xAxis);
+		.call(xAxis)
+		.append("text")
+		.attr("x", 250)
+		.attr("dy", "2.5em")
+		.style("font-size", "1.1em")
+		.text("GDP per capita (USD)");
 };
 
 function setAttrToggle(csvData) {
@@ -275,32 +274,6 @@ function setAttrToggle(csvData) {
 			updateScatterPlot(csvData);
 			updateYAxis(csvData);
 		});
-	// d3.select(".form").remove();
-
-	// var form = d3.select(".attrToggleDiv")
-	// 	.append("form")
-	// 	.attr("class", "form");
-	// var labelEnter = form.selectAll("span")
-	// 	.data(attrArray)
-	// 	.enter().
-	// 	append("span");
-	// labelEnter.append("input")
-	// 	.attr("type", "radio")
-	// 	.attr("name", "attr")
-	// 	.attr("value", function(d, i) {return i;})
-	// 	.attr("checked", function(d) { //set the initially checked button
-	// 		if (d == expressedAttr) {
-	// 			return "checked";
-	// 		}
-	// 	})
-	// 	.on("change", function(){
-	// 		expressedAttr = attrArray[this.value];
-	// 		updateEnumUnits(csvData);
-	// 		updateYScale(csvData);
-	// 		updateScatterPlot(csvData);
-	// 		updateYAxis();
-	// 	});
-	// labelEnter.append("label").text(function(d) {return d;});
 };
 
 function updateEnumUnits(csvData) {
@@ -350,27 +323,6 @@ function dehighlight(props) {
 	d3.selectAll("." + props.region_code)
 		.style("stroke", "#000")
 		.style("stroke-width", "0.5px");
-
-	// d3.selectAll("." + props.region_code)
-	// 	.style({
-	// 		"stroke": function() {
-	// 			return getStyle(this, "stroke")
-	// 		},
-	// 		"stroke-width": function() {
-	// 			console.log(getStyle(this, "stroke-width"));
-
-	// 			return getStyle(this, "stroke-width")
-	// 		}
-	// 	});
-
-	// function getStyle(element, styleName) {
-	// 	var styleText = d3.select(element)
-	// 		.select("desc")
-	// 		.text();
-	// 	var styleObject = JSON.parse(styleText);
-	// 	console.log(styleObject);
-	// 	return styleObject[styleName];
-	// };
 
 	d3.select(".infolabel").remove();
 };
@@ -423,14 +375,4 @@ function moveLabel() {
 			"left": x + "px",
 			"top": y + "px"
 		});
-};
-
-function createSlider() {
-	var slider = d3.slider().axis(true).min(1950).max(2005).step(5);
-		// .on("slide", function() {
-		// 	console.log("sliding"); // change values
-		// });
-
-	d3.select("#slider").call(slider);
-
 };

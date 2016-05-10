@@ -1,4 +1,3 @@
-//planning to use all orginal map fucntions, and rid of orignial 'map2' functions
 window.onload = function() {	
 	setMap();
 };
@@ -189,27 +188,6 @@ function dehighlight(props) {
 	d3.selectAll("." + props.region_code)
 		.style("stroke", "#000")
 		.style("stroke-width", "0.5px");
-
-	// d3.selectAll("." + props.region_code)
-	// 	.style({
-	// 		"stroke": function() {
-	// 			return getStyle(this, "stroke")
-	// 		},
-	// 		"stroke-width": function() {
-	// 			console.log(getStyle(this, "stroke-width"));
-
-	// 			return getStyle(this, "stroke-width")
-	// 		}
-	// 	});
-
-	// function getStyle(element, styleName) {
-	// 	var styleText = d3.select(element)
-	// 		.select("desc")
-	// 		.text();
-	// 	var styleObject = JSON.parse(styleText);
-	// 	console.log(styleObject);
-	// 	return styleObject[styleName];
-	// };
 
 	d3.select(".infolabel").remove();
 	d3.select("#line" + props.region_code).classed("province--hover", false);

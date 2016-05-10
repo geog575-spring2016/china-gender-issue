@@ -1,7 +1,7 @@
 var years;
 
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
-	width = 800 - margin.left - margin.right,
+	width = 700 - margin.left - margin.right,
 	height = 550 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
@@ -38,7 +38,8 @@ function callback(error, provinces) {
 		.append("text")
 		.attr("x", 4)
 		.attr("dy", ".32em")
-		.style("font-weight", "bold");
+		.style("font-size", "1.4em")
+		.text("Sex-ratio");
 
 	linegraph.append("g")
 		.attr("class", "provinces")
