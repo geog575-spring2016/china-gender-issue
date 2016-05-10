@@ -53,7 +53,7 @@ label{
 .home{
 	float:left;
 	width:7%;
-	background: rgba(158, 147, 107, 0.51);
+	background: #ec7014;
 	padding: 2.5em 2em;
 }
 span.glyphicon.glyphicon-home {
@@ -111,13 +111,13 @@ nav a:focus {
 
 .cl-effect-13 a:hover::before,
 .cl-effect-13 a:focus::before {
-	color: #d58afc;
+	color: #ec7014;
 	text-shadow: 10px 0 #fff, -10px 0 #fff;
 }
 
 .cl-effect-13 a:hover,
 .cl-effect-13 a:focus {
-	color: #ba7700;
+	color: #ec7014;
 }
 
 /* Effect 14: border switch */
@@ -161,10 +161,10 @@ i.googlepluse{
 	font-family: 'Oswald', sans-serif;
 }
 .top-menu ul li a:hover{
-	color:#83774A;
+	color:#ec7014;
 }
 .top-menu ul li a.active{
-	color:#83774A;
+	color:#ec7014;
 }
 .header-top {
 	background: rgba(255, 255, 255, 0.32);
@@ -308,7 +308,7 @@ i.googlepluse{
 	line-height: 1.0em;
 }
 .header-bottom-grids {
-	margin-top: 0em;
+	margin-top: 0ßem;
 }
 .secvice-top-grid-1,.secvice-top-grid-2,.secvice-top-grid-3,.secvice-top-grid-4{
 	width:23.5%;
@@ -560,6 +560,7 @@ a.button img {
 }
 .about-top p {
 	color: #494949;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 200;
   font-size: 1.4em;
   line-height: 2.5em；
