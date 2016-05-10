@@ -48,7 +48,7 @@ function setMap() {
 
 		yScale = d3.scale.linear()
 			.range([20, 550])
-			.domain([140, 100]).nice();
+			.domain([140, 105]).nice();
 		xScale = d3.scale.linear()
 			.range([50, 580])
 			.domain([3000, 20000]).nice();
