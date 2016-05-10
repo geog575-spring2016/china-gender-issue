@@ -47,7 +47,7 @@ function setMap() {
 		setEnumUnits(provinces, map, path, colorScale);
 
 		yScale = d3.scale.linear()
-			.range([20, 550])
+			.range([20, 450])
 			.domain([140, 105]).nice();
 		xScale = d3.scale.linear()
 			.range([50, 580])
@@ -125,26 +125,24 @@ function setEnumUnits(provinces, map, path, colorScale) {
 
 function makeColorScale(data) {
 	//data is an array of provinces
-	var colorClasses = [
-		"#fee5d9",
-		"#fcae91",
-		"#fb6a4a",
-		"#de2d26",
-		"#a50f15"
-	];
+	var colorClasses =[
+	'#feedde','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#8c2d04'];
 
 	var colorScale = d3.scale.threshold()
 		.range(colorClasses);
 
-	//build array of all values of the expressedAttr attribute
+	//build array of all values
 	var domainArray = [];
 	for (var i = 0; i < data.length; i++){
-		var val = parseFloat(data[i][expressedAttr]);
-		domainArray.push(val);
+		attrArray.forEach(function(attr){
+			var val = parseFloat(data[i][attr]);
+			domainArray.push(val);
+		});
+		// var val = parseFloat(data[i][expressedAttr]);
+		// domainArray.push(val);
 	};
-
 	//cluster data using ckmeans clustering algorithm to create natural breaks
-	var clusters = ss.ckmeans(domainArray, 5);
+	var clusters = ss.ckmeans(domainArray, 7);
 	//reset domain array to cluster minimums
 	domainArray = clusters.map(function(d) {
 		return d3.min(d);
@@ -155,7 +153,7 @@ function makeColorScale(data) {
 	colorScale.domain(domainArray);
 
 	return colorScale; 
-}
+};
 
 // deal with enumUnits without data
 function choropleth(props, colorScale) {
@@ -177,7 +175,7 @@ function setScatterPlot(csvData) {
 		.append("svg")
 		.attr("class", "scatterPlot")
 		.attr("width", 600)
-		.attr("height", 600);
+		.attr("height", 550);
 
 	// var scatterPlotInnerWidth = 500,
 	// 	scatterPlotInnerHeight = 500;
@@ -211,6 +209,7 @@ function updateScatterPlot(csvData) {
 			return xScale(d["gdp_per_capita"]);
 		})
 		.attr("r", 5)
+		.style("fill", "grey")
 		.attr("translate", translate)
 		.on("mouseover", highlight)
 		.on("mouseout", dehighlight)
@@ -239,37 +238,69 @@ function updateXAxis() {
 	var scatterPlot = d3.select(".scatterPlot");
 	scatterPlot.append("g")
 		.attr("class", "xAxis")
-		.attr("transform", "translate(0," + 550 + ")")
+		.attr("transform", "translate(0," + 450 + ")")
 		.call(xAxis);
 };
 
 function setAttrToggle(csvData) {
-	d3.select(".form").remove();
-
-	var form = d3.select(".attrToggleDiv")
-		.append("form")
-		.attr("class", "form");
-	var labelEnter = form.selectAll("span")
-		.data(attrArray)
-		.enter().
-		append("span");
-	labelEnter.append("input")
-		.attr("type", "radio")
-		.attr("name", "attr")
-		.attr("value", function(d, i) {return i;})
-		.attr("checked", function(d) { //set the initially checked button
-			if (d == expressedAttr) {
-				return "checked";
-			}
-		})
-		.on("change", function(){
-			expressedAttr = attrArray[this.value];
+	d3.select(".header-bottom-grid1")
+		.on("click", function() {
+			expressedAttr = "urban_unmarried_m_f";
 			updateEnumUnits(csvData);
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
-			updateYAxis();
+			updateYAxis(csvData);
 		});
-	labelEnter.append("label").text(function(d) {return d;});
+	d3.select(".header-bottom-grid2")
+		.on("click", function() {
+			expressedAttr = "rural_unmarried_m_f";
+			updateEnumUnits(csvData);
+			updateYScale(csvData);
+			updateScatterPlot(csvData);
+			updateYAxis(csvData);
+		});
+	d3.select(".header-bottom-grid3")
+		.on("click", function() {
+			expressedAttr = "urban_newborn_m_f";
+			updateEnumUnits(csvData);
+			updateYScale(csvData);
+			updateScatterPlot(csvData);
+			updateYAxis(csvData);
+		});
+	d3.select(".header-bottom-grid4")
+		.on("click", function() {
+			expressedAttr = "rural_newborn_m_f";
+			updateEnumUnits(csvData);
+			updateYScale(csvData);
+			updateScatterPlot(csvData);
+			updateYAxis(csvData);
+		});
+	// d3.select(".form").remove();
+
+	// var form = d3.select(".attrToggleDiv")
+	// 	.append("form")
+	// 	.attr("class", "form");
+	// var labelEnter = form.selectAll("span")
+	// 	.data(attrArray)
+	// 	.enter().
+	// 	append("span");
+	// labelEnter.append("input")
+	// 	.attr("type", "radio")
+	// 	.attr("name", "attr")
+	// 	.attr("value", function(d, i) {return i;})
+	// 	.attr("checked", function(d) { //set the initially checked button
+	// 		if (d == expressedAttr) {
+	// 			return "checked";
+	// 		}
+	// 	})
+	// 	.on("change", function(){
+	// 		expressedAttr = attrArray[this.value];
+	// 		updateEnumUnits(csvData);
+	// 		updateYScale(csvData);
+	// 		updateScatterPlot(csvData);
+	// 		updateYAxis();
+	// 	});
+	// labelEnter.append("label").text(function(d) {return d;});
 };
 
 function updateEnumUnits(csvData) {
@@ -299,7 +330,7 @@ function updateYScale(csvData) {
 	};
 
 	yScale = d3.scale.linear()
-		.range([20, 550])
+		.range([20, 450])
 		.domain([maxVal + 5, minVal - 5]).nice();
 
 };

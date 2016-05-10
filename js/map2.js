@@ -118,38 +118,35 @@ function setEnumUnits(provinces, map, path, colorScale) {
 
 function makeColorScale(data) {
 	//data is an array of provinces
-	var colorClasses = [
-		"#fee5d9",
-		"#fcae91",
-		"#fb6a4a",
-		"#de2d26",
-		"#a50f15"
-	];
+	var colorClasses =[
+	'#feedde','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#8c2d04'];
 
 	var colorScale = d3.scale.threshold()
 		.range(colorClasses);
 
-	//build array of all values of the expressedAttr attribute
+	//build array of all values
 	var domainArray = [];
-	for (var i = 0; i < data.length-1; i++){ // (-1) as to not include region_code part of data
-
-		var val = parseFloat(data[i][expressedAttr]);
-		domainArray.push(val);
+	for (var i = 0; i < data.length; i++){
+		attrArray.forEach(function(attr){
+			var val = parseFloat(data[i][attr]);
+			domainArray.push(val);
+		});
+		// var val = parseFloat(data[i][expressedAttr]);
+		// domainArray.push(val);
 	};
 	//cluster data using ckmeans clustering algorithm to create natural breaks
-	var clusters = ss.ckmeans(domainArray, 5); //cannot generate more classs then there are data values
+	var clusters = ss.ckmeans(domainArray, 7);
 	//reset domain array to cluster minimums
 	domainArray = clusters.map(function(d) {
 		return d3.min(d);
 	});
-
 	//remove first value from domain array to create class breakpoints
 	domainArray.shift();
-
 	//assign array of last 4 cluster minimums as domain
 	colorScale.domain(domainArray);
+
 	return colorScale; 
-}
+};
 
 // deal with enumUnits without data
 function choropleth(props, colorScale) {
@@ -269,7 +266,7 @@ function moveLabel() {
 };
 
 function createSlider(csvData) {
-	var slider = d3.slider().axis(true).min(1950).max(2005).step(5).on("slide", function(evt, value){
+	var slider = d3.slider().axis(true).min(1950).max(2000).step(5).on("slide", function(evt, value){
 		expressedAttr = value;
 		updateEnumUnits(csvData); 
 	});

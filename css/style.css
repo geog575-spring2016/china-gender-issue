@@ -187,7 +187,8 @@ i.googlepluse{
 	width:23.5%;
 	float:left;
 	margin-right:2%;
-	padding: 3em 0 4em 0;
+	padding: 1.5em 0 1.5em 0;
+	height: 7em;
 }
 
 .header-bottom-grid1{
@@ -243,7 +244,7 @@ i.googlepluse{
 	transition: 0.8s;
 }
 .header-bottom-grid3{
-	background:rgba(222, 203, 165, 0.57);
+	background:#decba5;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -261,7 +262,7 @@ i.googlepluse{
 	transition: 0.8s;
 }
 .header-bottom-grid3:hover{
-	background:#decba5;
+	background:#c9ab6d;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
