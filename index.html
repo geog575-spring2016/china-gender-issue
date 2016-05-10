@@ -22,6 +22,8 @@
 		<link rel="stylesheet" href="css/style1.css">
 		<link rel="stylesheet" type="text/css" href="lib/d3-slider/d3.slider.css">
 		<script type="text/javascript" src="js/easing.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <!--/script-->
 
 
@@ -68,21 +70,33 @@
 		<div class="col-md-12">			
 
 			<div class="header-bottom-grids text-center">
-				<div class="header-bottom-grid1">
+				<div class="header-bottom-grid1" href="#" data-toggle="tooltip" data-placement="top" title="Sex-ratio of unmarried for urban areas">
 					<h4>Urban Unmarried</h4></div>
 
-				<div class="header-bottom-grid2">
+				<div class="header-bottom-grid2" href="#" data-toggle="tooltip" data-placement="top" title="Sex-ratio of unmarried for rural areas">
 					<h4>Rural Unmarried</h4></div>
 
-				<div class="header-bottom-grid3">
+				<div class="header-bottom-grid3" href="#" data-toggle="tooltip" data-placement="top" title="Sex-ratio at birth for urban areas">
 					<h4>Urban Newborn</h4></div>
 
-				<div class="header-bottom-grid4">
+				<div class="header-bottom-grid4" href="#" data-toggle="tooltip" data-placement="top" title="Sex-ratio at birth for rural areas">
 					<h4>Rural Newborn</h4></div>
 				
 			</div>
 		</div>
 </div>	
+
+<!-- tooltips -->
+
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+});
+</script>
+
+
+
+
 <div class="about-content text-center">
 	<div class="about-top">
 						<p>.</p>
