@@ -192,7 +192,14 @@ i.googlepluse{
 	cursor: pointer;
 	cursor: hand;
 }
-
+#active{
+	background:gray;
+	transition: 0.5s all;
+	-webkit-transition: 0.5s all;
+	-moz-transition: 0.5s all;
+	-o-transition: 0.5s all;
+	-ms-transition: 0.5s all;	
+}
 .header-bottom-grid1{
 	background:#ec7014;	
 	transition: 0.5s all;

@@ -252,6 +252,11 @@ function setAttrToggle(csvData) {
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
 			updateYAxis(csvData);
+			d3.select(".header-bottom-grid2").attr("id", "");
+			d3.select(".header-bottom-grid3").attr("id", "");
+			d3.select(".header-bottom-grid4").attr("id", "");
+			d3.select(this)
+				.attr("id", "active");
 		});
 	d3.select(".header-bottom-grid2")
 		.on("click", function() {
@@ -260,6 +265,11 @@ function setAttrToggle(csvData) {
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
 			updateYAxis(csvData);
+			d3.select(".header-bottom-grid1").attr("id", "");
+			d3.select(".header-bottom-grid3").attr("id", "");
+			d3.select(".header-bottom-grid4").attr("id", "");
+			d3.select(this)
+				.attr("id", "active");
 		});
 	d3.select(".header-bottom-grid3")
 		.on("click", function() {
@@ -268,7 +278,11 @@ function setAttrToggle(csvData) {
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
 			updateYAxis(csvData);
-			d3.select(".header-bottom-grid3").classed("target", true);
+			d3.select(".header-bottom-grid1").attr("id", "");
+			d3.select(".header-bottom-grid2").attr("id", "");
+			d3.select(".header-bottom-grid4").attr("id", "");
+			d3.select(this)
+				.attr("id", "active");
 		});
 	d3.select(".header-bottom-grid4")
 		.on("click", function() {
@@ -277,6 +291,11 @@ function setAttrToggle(csvData) {
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
 			updateYAxis(csvData);
+			d3.select(".header-bottom-grid1").attr("id", "");
+			d3.select(".header-bottom-grid2").attr("id", "");
+			d3.select(".header-bottom-grid3").attr("id", "");
+			d3.select(this)
+				.attr("id", "active");
 		});
 };
 
