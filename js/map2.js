@@ -244,7 +244,7 @@ function moveLabel() {
 };
 
 function createSlider(csvData) {
-	var slider = d3.slider().axis(true).min(1950).max(2005).step(5).on("slide", function(evt, value){
+	var slider = d3.slider().axis(true).min(1950).max(2000).step(5).on("slide", function(evt, value){
 		expressedAttr = value;
 		updateEnumUnits(csvData); 
 	});
