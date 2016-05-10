@@ -1,10 +1,11 @@
-var years;
+var years,
+	yearFormat = d3.time.format("%Y");
 
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
 	width = 600 - margin.left - margin.right,
 	height = 550 - margin.top - margin.bottom;
 
-var x = d3.scale.linear()
+var x = d3.time.scale()
 	.range([0, width]);
 
 var y = d3.scale.linear()
@@ -19,7 +20,6 @@ d3.csv("data/gender_ratio_chart.csv", type, function(error, provinces) {
 });
 
 function callback(error, provinces) {
-	console.log(provinces);
 	x.domain(d3.extent(years));
 	y.domain([90, 140]);
 
@@ -116,7 +116,7 @@ var linegraph = d3.select(".linegraph").append("svg")
 function type(d, i) {
 	//read first line, i != 0
 	//Object.keys(d) return years of csv data
-	if (!i) years = Object.keys(d).filter(Number);
+	if (!i) years = Object.keys(d).map(yearFormat.parse).filter(Number);
 	var province = {
 		name: d.name,
 		region_code: null,
@@ -128,7 +128,7 @@ function type(d, i) {
 		return {
 			province: province,
 			date: m,
-			value: Math.ceil(d[m])
+			value: d[yearFormat(m)]
 		};
 	});
 	return province;
