@@ -194,7 +194,7 @@ i.googlepluse{
 }
 
 .header-bottom-grid1{
-	background:rgba(132, 117, 78, 0.76);	
+	background:#ec7014;	
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -202,7 +202,7 @@ i.googlepluse{
 	-ms-transition: 0.5s all;
 }
 .header-bottom-grid1:hover {
-	background-color: #7B6D44;
+	background-color: gray;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -220,7 +220,7 @@ i.googlepluse{
 	transition: 0.8s;
 }
 .header-bottom-grid2{
-	background:rgba(166, 25, 46, 0.57);	
+	background:#8c2d04;	
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -228,7 +228,7 @@ i.googlepluse{
 	-ms-transition: 0.5s all;
 }
 .header-bottom-grid2:hover{
-	background:#a6192e;	
+	background:gray;	
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -246,7 +246,7 @@ i.googlepluse{
 	transition: 0.8s;
 }
 .header-bottom-grid3{
-	background:#decba5;
+	background:#fe9929;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -264,7 +264,7 @@ i.googlepluse{
 	transition: 0.8s;
 }
 .header-bottom-grid3:hover{
-	background:#c9ab6d;
+	background:gray;
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -272,7 +272,7 @@ i.googlepluse{
 	-ms-transition: 0.5s all;	
 }
 .header-bottom-grid4{
-	background:rgba(0, 0, 0, 0.48);	
+	background:#fec44f;	
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
@@ -281,7 +281,7 @@ i.googlepluse{
 	margin-right:0;
 }
 .header-bottom-grid4:hover{
-	background:#000000;	
+	background:gray;	
 	transition: 0.5s all;
 	-webkit-transition: 0.5s all;
 	-moz-transition: 0.5s all;
