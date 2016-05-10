@@ -1,7 +1,7 @@
 var years;
 
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
-	width = 700 - margin.left - margin.right,
+	width = 600 - margin.left - margin.right,
 	height = 550 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
