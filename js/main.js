@@ -43,7 +43,7 @@ function setMap() {
 		provinces = joinData(provinces, csvData);
 		setAttrToggle(csvData);
 
-		var colorScale = makeColorScale(csvData);
+		colorScale = makeColorScale(csvData);
 		setEnumUnits(provinces, map, path, colorScale);
 
 		yScale = d3.scale.linear()
@@ -109,6 +109,7 @@ function setEnumUnits(provinces, map, path, colorScale) {
 		})
 		.attr("d", path)
 		.style("fill", function(d) {
+			//console.log(d.properties);
 			return choropleth(d.properties, colorScale);
 		})
 		.on("mouseover", function(d) {
@@ -198,7 +199,9 @@ function updateScatterPlot(csvData) {
 			return xScale(d["gdp_per_capita"]);
 		})
 		.attr("r", 5)
-		.style("fill", "grey")
+		.style("fill", function(d) {
+			return choropleth(d, colorScale);
+		})
 		.attr("translate", translate)
 		.on("mouseover", highlight)
 		.on("mouseout", dehighlight)
@@ -265,6 +268,7 @@ function setAttrToggle(csvData) {
 			updateYScale(csvData);
 			updateScatterPlot(csvData);
 			updateYAxis(csvData);
+			d3.select(".header-bottom-grid3").classed("target", true);
 		});
 	d3.select(".header-bottom-grid4")
 		.on("click", function() {
@@ -320,9 +324,11 @@ function highlight(props) {
 }
 
 function dehighlight(props) {
-	d3.selectAll("." + props.region_code)
+	d3.select(".enumUnits." + props.region_code)
 		.style("stroke", "#000")
 		.style("stroke-width", "0.5px");
+	d3.select(".dataPoints." + props.region_code)
+		.style("stroke", "none");
 
 	d3.select(".infolabel").remove();
 };
